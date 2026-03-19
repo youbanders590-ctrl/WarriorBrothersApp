@@ -3,22 +3,16 @@ import pandas as pd
 from datetime import datetime, timedelta
 import urllib.parse
 import pytz
+from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(page_title="The Warrior Brothers - Registro", page_icon="💪")
 zona_ec = pytz.timezone('America/Guayaquil')
 
-# --- CONFIGURACIÓN DE GOOGLE SHEETS ---
-# 1. VE A TU HOJA DE GOOGLE
-# 2. CLICK EN 'COMPARTIR' -> CAMBIAR A 'CUALQUIER PERSONA CON EL ENLACE' -> CAMBIAR A 'EDITOR'
-# 3. COPIA EL ID DE LA HOJA (está en la URL, entre /d/ y /edit)
-# 4. REEMPLAZA AQUÍ ABAJO:
-SHEET_ID = "10Te_l9X_7wb4qmQDhjqBzalil5DF1Gs06OZKjAviALY" 
-SHEET_NAME = "Hoja1" # El nombre de la pestaña abajo en el Excel
-from streamlit_gsheets import GSheetsConnection
+# --- FUNCIÓN DE GUARDADO ---
 def guardar_en_sheets(datos_dict):
     try:
-        # Conexión simplificada usando los Secretos de Streamlit
+        # Conexión oficial usando los Secretos de Streamlit
         conn = st.connection("gsheets", type=GSheetsConnection)
         
         # Lee los datos que ya están en el Excel
@@ -34,7 +28,6 @@ def guardar_en_sheets(datos_dict):
     except Exception as e:
         st.error(f"Error real de conexión: {e}")
         return False
-
 
 # --- INTERFAZ DE LA APP ---
 st.title("🛡️ Sistema The Warrior Brothers")
@@ -90,15 +83,9 @@ if submit_button:
             "Fecha_Entrega": fecha_entrega_str
         }
         
-        # 1. Guardar en Google Sheets
+        # 1. Guardar en Google Sheets de verdad
         with st.spinner("Guardando en base de datos..."):
-            # Para esta demostración rápida, si no configuraste secretos, guardará localmente.
-            # En producción, usarás: exito = guardar_en_sheets(datos_cliente)
-            # st.connection requiere pasos extras de configuración en el dashboard de Streamlit.
-            
-            # SIMULACIÓN DE GUARDADO (Para que pruebes la interfaz ahora)
             exito = guardar_en_sheets(datos_cliente)
-           
 
         if exito:
             # 2. Generar Mensaje WhatsApp
@@ -121,10 +108,8 @@ if submit_button:
             # 3. Mostrar Recibo y Botón
             st.markdown("---")
             st.subheader(f"Recibo para {nombre.upper()}")
-            
             st.code(mensaje, language=None)
             
-            # Botón de WhatsApp
             st.markdown(f'''
                 <a href="{link_wa}" target="_blank">
                     <button style="background-color: #25D366; color: white; padding: 15px 25px;

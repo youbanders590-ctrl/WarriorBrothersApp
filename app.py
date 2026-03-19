@@ -76,7 +76,7 @@ if submit:
                f"💵 *Abono:* ${abono:.2f}\n"
                f"💳 *Saldo:* ${saldo:.2f}\n"
                f"🗓️ *Entrega:* {f_entrega}\n\n"
-               f"¡Sus zapatos quedarán como nuevos!")
+               f"¡Gracias por su confianza!")
 
         link_wa = f"https://wa.me/593{celular.lstrip('0')}?text={urllib.parse.quote(msg)}"
         st.markdown(f'<a href="{link_wa}" target="_blank" class="whatsapp-button">📲 ENVIAR POR WHATSAPP</a>', unsafe_allow_html=True)

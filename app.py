@@ -1,9 +1,3 @@
-Aquí tienes el código definitivo, completo y blindado. He ajustado los textos para que se adapten específicamente a tu negocio de reparación de calzado y he simplificado la conexión para evitar que la app se bloquee.
-
-1. Código Completo para app.py (Copia y Pega todo)
-Borra todo lo que tienes en GitHub y pega este código. Está diseñado para que, aunque Google tarde en responder, la app siga funcionando:
-
-Python
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
@@ -15,7 +9,7 @@ from streamlit_gsheets import GSheetsConnection
 st.set_page_config(page_title="The Warrior Brothers - Calzado", page_icon="👞")
 zona_ec = pytz.timezone('America/Guayaquil')
 
-# Estilo para el botón de WhatsApp
+# Estilo visual
 st.markdown("""
     <style>
     .stButton>button { width: 100%; border-radius: 10px; height: 3.5em; font-weight: bold; background-color: #007bff; color: white; }
@@ -35,7 +29,7 @@ with st.form("formulario_calzado", clear_on_submit=False):
     with col1:
         nombre = st.text_input("Nombre del Cliente:")
         celular = st.text_input("Celular (Ej: 0991234567):")
-        zapato = st.text_input("Tipo de Calzado (Ej: Botas, Tacones):")
+        zapato = st.text_input("Tipo de Calzado (Ej: Botas, Zapatos):")
     
     with col2:
         reparacion = st.text_input("¿Qué reparación se hará?:")
@@ -60,7 +54,6 @@ if submit:
                 "Calzado": zapato, "Reparacion": reparacion, "Total": f"{total:.2f}",
                 "Abono": f"{abono:.2f}", "Saldo": f"{saldo:.2f}", "Entrega": f_entrega
             }
-            # Intentar leer y añadir
             try:
                 df = conn.read()
                 df_nuevo = pd.concat([df, pd.DataFrame([datos])], ignore_index=True)
@@ -71,9 +64,9 @@ if submit:
             st.success("✅ ¡Registro guardado en el Excel!")
         except Exception as e:
             if "200" in str(e):
-                st.success("✅ ¡Registro sincronizado exitosamente!")
+                st.success("✅ ¡Registro guardado con éxito!")
             else:
-                st.info("⚠️ El registro se procesó (Revisa tu Excel en unos minutos).")
+                st.info("⚠️ Procesando... (Verifica tu Excel en unos segundos).")
 
         # --- MENSAJE DE WHATSAPP ---
         msg = (f"👞 *THE WARRIOR BROTHERS*\n"

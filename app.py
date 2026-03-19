@@ -137,18 +137,4 @@ try:
             }
 
             # Intentar leer; si falla o está vacío, crear desde cero
-            try:
-                df_existente = conn.read()
-                df_final = pd.concat([df_existente, pd.DataFrame([datos_nuevos])], ignore_index=True)
-            except:
-                df_final = pd.DataFrame([datos_nuevos])
-            
-            # Actualizar con limpieza de datos nulos
-            conn.update(data=df_final.fillna(""))
-            st.success("✅ ¡Registrado en el Excel de Warrior Brothers!")
-            
-        except Exception as e:
-            if "200" in str(e):
-                st.success("✅ ¡Registro exitoso!")
-            else:
-                st.error(f"Error de sincronización: {e}")
+           

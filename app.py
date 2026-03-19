@@ -16,7 +16,6 @@ zona_ec = pytz.timezone('America/Guayaquil')
 SHEET_ID = "10Te_l9X_7wb4qmQDhjqBzalil5DF1Gs06OZKjAviALY" 
 SHEET_NAME = "Hoja1" # El nombre de la pestaña abajo en el Excel
 from streamlit_gsheets import GSheetsConnection
-
 def guardar_en_sheets(datos_dict):
     try:
         # Conexión simplificada usando los Secretos de Streamlit

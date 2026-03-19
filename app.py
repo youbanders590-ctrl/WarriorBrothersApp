@@ -5,117 +5,57 @@ import urllib.parse
 import pytz
 from streamlit_gsheets import GSheetsConnection
 
-# --- CONFIGURACIÓN DE LA PÁGINA ---
-st.set_page_config(page_title="The Warrior Brothers - Registro", page_icon="💪")
+# --- CONFIGURACIÓN ---
+st.set_page_config(page_title="The Warrior Brothers", page_icon="💪")
 zona_ec = pytz.timezone('America/Guayaquil')
 
-# --- FUNCIÓN DE GUARDADO ---
-def guardar_en_sheets(datos_dict):
-    try:
-        # Conexión oficial usando los Secretos de Streamlit
-        conn = st.connection("gsheets", type=GSheetsConnection)
-        
-        # Lee los datos que ya están en el Excel
-        df_existente = conn.read()
-        
-        # Prepara la nueva fila
-        nueva_fila = pd.DataFrame([datos_dict])
-        
-        # Une los datos y actualiza la hoja
-        df_final = pd.concat([df_existente, nueva_fila], ignore_index=True)
-        conn.update(data=df_final)
-        return True
-    except Exception as e:
-        st.error(f"Error real de conexión: {e}")
-        return False
-
-# --- INTERFAZ DE LA APP ---
+# --- INTERFAZ ---
 st.title("🛡️ Sistema The Warrior Brothers")
-st.markdown("---")
 
 with st.form("formulario_cliente", clear_on_submit=True):
     st.subheader("Nuevo Registro de Trabajo")
-    
     col1, col2 = st.columns(2)
-    
     with col1:
         nombre = st.text_input("Nombre del Cliente:")
-        celular = st.text_input("Número de Celular (ej: 099...)")
-        articulo = st.text_input("Artículo (ej: Zapatos, Bolso)")
-        
+        celular = st.text_input("Celular (ej: 099...)")
+        articulo = st.text_input("Artículo:")
     with col2:
-        trabajo = st.text_input("Reparación a realizar")
-        precio_total = st.number_input("Precio Total ($)", min_value=0.0, format="%.2f")
-        abono = st.number_input("Abono Inicial ($)", min_value=0.0, format="%.2f")
-        dias_entrega = st.number_input("¿En cuántos días se entrega?", min_value=1, value=2)
+        trabajo = st.text_input("Reparación:")
+        precio_total = st.number_input("Precio Total ($)", min_value=0.0)
+        abono = st.number_input("Abono Inicial ($)", min_value=0.0)
+        dias_entrega = st.number_input("Días entrega", min_value=1, value=2)
 
-    submit_button = st.form_submit_button(label="📄 Generar Recibo y Guardar")
+    submit = st.form_submit_button("📄 Generar Recibo y Guardar")
 
-# --- LÓGICA AL ENVIAR ---
-if submit_button:
-    if not nombre or not celular or not articulo:
-        st.warning("⚠️ Por favor llena los campos básicos (Nombre, Celular, Artículo).")
-    else:
+if submit:
+    if nombre and celular:
         # CÁLCULOS
         saldo = precio_total - abono
-        ahora_ec = datetime.now(zona_ec)
+        ahora = datetime.now(zona_ec)
+        f_entrega = (ahora + timedelta(days=dias_entrega)).strftime("%d/%m/%Y")
         
-        # Saludo
-        hora = ahora_ec.hour
-        if 5 <= hora < 12: saludo = "Buenos días"
-        elif 12 <= hora < 19: saludo = "Buenas tardes"
-        else: saludo = "Buenas noches"
-        
-        # Fecha entrega
-        fecha_entrega_dt = ahora_ec + timedelta(days=dias_entrega)
-        fecha_entrega_str = fecha_entrega_dt.strftime("%d/%m/%Y")
-        
-        # Datos para guardar
-        datos_cliente = {
-            "Fecha": ahora_ec.strftime("%Y-%m-%d %H:%M"),
-            "Cliente": nombre.upper(),
-            "Celular": celular,
-            "Artículo": articulo,
-            "Trabajo": trabajo,
-            "Total": precio_total,
-            "Abono": abono,
-            "Saldo": saldo,
-            "Fecha_Entrega": fecha_entrega_str
-        }
-        
-        # 1. Guardar en Google Sheets de verdad
-        with st.spinner("Guardando en base de datos..."):
-            exito = guardar_en_sheets(datos_cliente)
+        # 1. GUARDAR EN GOOGLE SHEETS
+        try:
+            conn = st.connection("gsheets", type=GSheetsConnection)
+            df_existente = conn.read()
+            nueva_fila = pd.DataFrame([{
+                "Fecha": ahora.strftime("%Y-%m-%d %H:%M"),
+                "Cliente": nombre.upper(),
+                "Celular": celular,
+                "Artículo": articulo,
+                "Trabajo": trabajo,
+                "Total": precio_total,
+                "Abono": abono,
+                "Saldo": saldo,
+                "Fecha_Entrega": f_entrega
+            }])
+            df_final = pd.concat([df_existente, nueva_fila], ignore_index=True)
+            conn.update(data=df_final)
+            st.success("✅ ¡Guardado en Excel!")
+        except Exception as e:
+            st.error(f"Error al guardar: {e}")
 
-        if exito:
-            # 2. Generar Mensaje WhatsApp
-            num_limpio = celular.lstrip('0').replace(" ", "").replace("-", "")
-            num_final = f"593{num_limpio}"
-            
-            mensaje = (
-                f"{saludo} *{nombre}*, le saludamos de *THE WARRIOR BROTHERS* 🛡️.\n\n"
-                f"Confirmamos la recepción de su *{articulo}* para: *{trabajo}*.\n"
-                f"💰 *Total:* ${precio_total:.2f}\n"
-                f"💵 *Abono:* ${abono:.2f}\n"
-                f"💳 *Saldo pendiente:* ${saldo:.2f}\n"
-                f"🗓️ *Fecha estimada de entrega:* {fecha_entrega_str}\n\n"
-                f"¡Gracias por su confianza!"
-            )
-            
-            msg_encoded = urllib.parse.quote(mensaje)
-            link_wa = f"https://wa.me/{num_final}?text={msg_encoded}"
-            
-            # 3. Mostrar Recibo y Botón
-            st.markdown("---")
-            st.subheader(f"Recibo para {nombre.upper()}")
-            st.code(mensaje, language=None)
-            
-            st.markdown(f'''
-                <a href="{link_wa}" target="_blank">
-                    <button style="background-color: #25D366; color: white; padding: 15px 25px;
-                    border: none; border-radius: 10px; font-weight: bold; cursor: pointer;
-                    width: 100%; font-size: 16px;">
-                        📲 ENVIAR A WHATSAPP
-                    </button>
-                </a>
-            ''', unsafe_allow_html=True)
+        # 2. BOTÓN DE WHATSAPP
+        mensaje = f"Hola *{nombre.upper()}*, de *THE WARRIOR BROTHERS* 🛡️. Recibimos su *{articulo}* para *{trabajo}*. Total: ${precio_total} | Abono: ${abono} | Saldo: ${saldo} | Entrega: {f_entrega}"
+        link_wa = f"https://wa.me/593{celular.lstrip('0')}?text={urllib.parse.quote(mensaje)}"
+        st.markdown(f'''<a href="{link_wa}" target="_blank"><button style="background-color: #25D366; color: white; padding: 15px; border: none; border-radius: 10px; width: 100%; cursor: pointer; font-weight: bold;">📲 ENVIAR A WHATSAPP</button></a>''', unsafe_allow_html=True)

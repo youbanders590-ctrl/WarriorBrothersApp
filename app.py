@@ -15,33 +15,27 @@ zona_ec = pytz.timezone('America/Guayaquil')
 # 4. REEMPLAZA AQUÍ ABAJO:
 SHEET_ID = "10Te_l9X_7wb4qmQDhjqBzalil5DF1Gs06OZKjAviALY" 
 SHEET_NAME = "Hoja1" # El nombre de la pestaña abajo en el Excel
+from streamlit_gsheets import GSheetsConnection
 
-# Función para guardar datos en Google Sheets (usando formato CSV para simplicidad)
 def guardar_en_sheets(datos_dict):
     try:
-        # Esto genera la URL de la API de Google Sheets para añadir filas (vía formulario indirecto)
-        # Nota: Usar st.connection("gsheets") es más robusto pero requiere claves privadas.
-        # Para empezar rápido, usaremos una técnica de 'append' simplificada si st.connection no está configurado.
-        
-        # Como Streamlit Community Cloud gestiona secretos de forma segura, 
-        # esta es la estructura recomendada para conectar:
+        # Conexión simplificada usando los Secretos de Streamlit
         conn = st.connection("gsheets", type=GSheetsConnection)
         
-        # Leer datos actuales
-        existing_data = conn.read(spreadsheet=SHEET_ID, worksheet=SHEET_NAME)
+        # Lee los datos que ya están en el Excel
+        df_existente = conn.read()
         
-        # Crear nuevo DataFrame con el cliente
-        new_data = pd.DataFrame([datos_dict])
+        # Prepara la nueva fila
+        nueva_fila = pd.DataFrame([datos_dict])
         
-        # Concatenar
-        updated_data = pd.concat([existing_data, new_data], ignore_index=True)
-        
-        # Volver a escribir todo
-        conn.update(spreadsheet=SHEET_ID, worksheet=SHEET_NAME, data=updated_data)
+        # Une los datos y actualiza la hoja
+        df_final = pd.concat([df_existente, nueva_fila], ignore_index=True)
+        conn.update(data=df_final)
         return True
     except Exception as e:
-        st.error(f"Error guardando en la nube: {e}")
+        st.error(f"Error real de conexión: {e}")
         return False
+
 
 # --- INTERFAZ DE LA APP ---
 st.title("🛡️ Sistema The Warrior Brothers")
@@ -104,8 +98,8 @@ if submit_button:
             # st.connection requiere pasos extras de configuración en el dashboard de Streamlit.
             
             # SIMULACIÓN DE GUARDADO (Para que pruebes la interfaz ahora)
-            st.success("✅ (Simulación) Datos listos para guardarse en la nube.")
-            exito = True # Cambiar a la función real al desplegar
+            exito = guardar_en_sheets(datos_cliente)
+           
 
         if exito:
             # 2. Generar Mensaje WhatsApp

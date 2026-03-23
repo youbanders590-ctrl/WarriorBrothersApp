@@ -55,7 +55,7 @@ if submit:
             conn = st.connection("gsheets", type=GSheetsConnection)
             
             # 1. Leer datos actuales
-            df_actual = conn.read(worksheet="Hoja 1", ttl=0)
+            df_actual = conn.read(worksheet="Registro", ttl=0)
             
             # 2. Crear la nueva fila
             nueva_fila = pd.DataFrame([{
@@ -74,7 +74,7 @@ if submit:
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
             
             # 4. Enviar al Excel (Sin asignar a ninguna variable)
-            conn.update(worksheet="Hoja 1", data=df_final, overwrite=True)
+            conn.update(worksheet="Registro", data=df_final, overwrite=True)
             
             st.success("✅ ¡Registro guardado exitosamente!")
             

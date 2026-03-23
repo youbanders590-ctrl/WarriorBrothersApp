@@ -53,10 +53,7 @@ if submit:
         try:
             conn = st.connection("gsheets", type=GSheetsConnection)
             
-            # Leer datos de la pestaña "Registro"
-            df_actual = conn.read(worksheet="Registro", ttl=0)
-            
-            # Crear la nueva fila (Nombres idénticos a tu Excel)
+            # 1. Crear la nueva fila con los datos
             nueva_fila = pd.DataFrame([{
                 "Fecha": f_h,
                 "Cliente": nombre.upper(),
@@ -69,11 +66,15 @@ if submit:
                 "Entrega": f_e
             }])
             
-            # Unir y subir
+            # 2. Leer lo que ya existe
+            df_actual = conn.read(worksheet="Registro", ttl=0)
+            
+            # 3. Juntar y actualizar
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
             conn.update(worksheet="Registro", data=df_final)
             
-            st.success("✅ ¡Registro guardado en el Excel!")
+            st.success("✅ ¡Registro guardado exitosamente!")
+       
             
             # --- 4. WHATSAPP ---
             msg_wa = (

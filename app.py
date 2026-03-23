@@ -44,32 +44,44 @@ with st.form("form_warrior", clear_on_submit=True):
 
 if submit:
     if nombre and celular:
+        # --- CÁLCULOS INICIALES ---
         saldo = total - abono
         ahora = datetime.now(zona_ec)
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
-# --- 3. GUARDADO EN GOOGLE SHEETS (VERSIÓN SEGURA) ---
+
+        # --- CREACIÓN DE LA FILA (Orden correcto para evitar error de definición) ---
+        nueva_fila = pd.DataFrame([{
+            "Fecha": f_h,
+            "Cliente": nombre.upper(),
+            "Celular": celular,
+            "Articulo": articulo,
+            "Reparacion": reparacion,
+            "Total": f"{total:.2f}",
+            "Abono": f"{abono:.2f}",
+            "Saldo": f"{saldo:.2f}",
+            "Entrega": f_e
+        }])
+
+        # --- 3. GUARDADO EN GOOGLE SHEETS ---
         try:
             conn = st.connection("gsheets", type=GSheetsConnection)
             
-            # Forzamos la lectura de la pestaña Data
+            # Intentar leer la pestaña "Data"
             try:
                 df_actual = conn.read(worksheet="Data", ttl=0)
             except:
-                df_actual = pd.DataFrame() # Si falla al leer, crea uno vacío
+                df_actual = pd.DataFrame()
 
-            # Juntar datos
+            # Unir y limpiar columnas invisibles (evita Error 400)
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
-            
-            # ELIMINAR COLUMNAS FANTASMA (Esto evita el Error 400)
             df_final = df_final.loc[:, ~df_final.columns.str.contains('^Unnamed')]
             
-            # Actualizar
+            # Subir datos
             conn.update(worksheet="Data", data=df_final)
-            st.success("✅ ¡Datos guardados en la pestaña Data!")
-        
-            
-            # --- 4. WHATSAPP ---
+            st.success("✅ ¡Registro guardado exitosamente en Google Sheets!")
+
+            # --- 4. GENERACIÓN DE MENSAJE WHATSAPP ---
             msg_wa = (
                 "🛡️ *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
@@ -91,7 +103,7 @@ if submit:
             
             st.markdown(f"""
                 <a href="{link_wa}" target="_blank" style="text-decoration:none;">
-                    <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px;">
+                    <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px; margin-top:20px;">
                         📲 ENVIAR RECIBO POR WHATSAPP
                     </div>
                 </a>
@@ -99,6 +111,6 @@ if submit:
 
         except Exception as e:
             st.error(f"Error al guardar: {e}")
-            st.info("Asegúrate de que los nombres de las columnas en el Excel sean: Fecha, Cliente, Celular, Articulo, Reparacion, Total, Abono, Saldo, Entrega")
+            st.info("Verifica que la pestaña del Excel se llame 'Data' y los encabezados coincidan.")
     else:
         st.error("⚠️ Por favor completa el nombre y el celular.")

@@ -48,13 +48,11 @@ if submit:
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
         
-        # --- 3. GUARDADO MANUAL EN GOOGLE SHEETS (SIN ERRORES) ---
+        # --- 3. GUARDADO EN GOOGLE SHEETS ---
         try:
             conn = st.connection("gsheets", type=GSheetsConnection)
-            # Leemos lo que ya hay en la hoja "Hoja 1"
             df_actual = conn.read(worksheet="Hoja 1", ttl=0)
             
-            # Creamos la fila nueva asegurando que las columnas sean idénticas a tu Excel
             nueva_fila = pd.DataFrame([{
                 "Fecha": f_h,
                 "Cliente": nombre.upper(),
@@ -67,18 +65,14 @@ if submit:
                 "Entrega": f_e
             }])
             
-            # Juntamos los datos viejos con el nuevo
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
-            
-            # Subimos todo de nuevo (Esto sobreescribe la hoja con la nueva fila incluida)
             conn.update(worksheet="Hoja 1", data=df_final)
             st.success("✅ ¡Registro guardado en el Excel!")
             
         except Exception as e:
             st.error(f"Error al guardar: {e}")
 
-        # --- 4. WHATSAPP CON EMOJIS SEGUROS ---
-        # Definimos el mensaje con emojis reales
+        # --- 4. WHATSAPP CON POLÍTICAS AÑADIDAS ---
         msg_wa = (
             f"🛡️ *THE WARRIOR BROTHERS*\n"
             f"------------------------------------------\n"
@@ -92,14 +86,15 @@ if submit:
             f"💳 *Saldo pendiente:* *${saldo:.2f}*\n"
             f"------------------------------------------\n"
             f"📅 *Entrega estimada:* {f_e}\n\n"
+            f"⚠️ *NOTA IMPORTANTE:*\n"
+            f"• Una vez ingresado el calzado, no se realizarán devoluciones de abonos ni entregas antes de la fecha acordada.\n"
+            f"• Los trabajos no retirados pasados los 2 meses serán liquidados para cubrir costos de material.\n\n"
             f"¡Gracias por su confianza! ✨"
         )
         
-        # Codificamos la URL para que los emojis NO se conviertan en signos de interrogación
         texto_url = urllib.parse.quote(msg_wa)
         link_wa = f"https://wa.me/593{celular.lstrip('0')}?text={texto_url}"
         
-        # Botón de WhatsApp
         st.markdown(f"""
             <a href="{link_wa}" target="_blank" style="text-decoration:none;">
                 <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px;">

@@ -62,7 +62,7 @@ if submit:
                 "Fecha": f_h,
                 "Cliente": nombre.upper(),
                 "Celular": celular,
-                "Calzado": articulo,
+                "Articulo": articulo,
                 "Reparacion": reparacion,
                 "Total": f"{total:.2f}",
                 "Abono": f"{abono:.2f}",

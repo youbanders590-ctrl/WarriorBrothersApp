@@ -67,13 +67,13 @@ if submit:
             }])
             
             # 2. Leer lo que ya existe
-            df_actual = conn.read(worksheet="Registro", ttl=0)
+            df_actual = conn.read(worksheet="Data", ttl=0)
             
             # 3. Juntar y actualizar
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
-            conn.update(worksheet="Registro", data=df_final)
+            conn.update(worksheet="Data", data=df_final)
             
-            st.success("✅ ¡Registro guardado exitosamente!")
+            st.success("✅ ¡Data guardado exitosamente!")
        
             
             # --- 4. WHATSAPP ---

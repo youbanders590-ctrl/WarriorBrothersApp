@@ -49,7 +49,8 @@ if submit:
         ahora = datetime.now(zona_ec)
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
-        # --- 3. GUARDADO EN GOOGLE SHEETS (LIMPIO) ---
+
+# --- 3. GUARDADO EN GOOGLE SHEETS (LIMPIO) ---
         try:
             conn = st.connection("gsheets", type=GSheetsConnection)
             
@@ -79,7 +80,7 @@ if submit:
             
         except Exception as e:
             st.error(f"Error al guardar: {e}")
-       
+        
         # --- 4. WHATSAPP ACTUALIZADO (PARA TODO TIPO DE ARTÍCULOS) ---
         msg_wa = (
             "🛡️ *THE WARRIOR BROTHERS*\n"

@@ -34,7 +34,7 @@ with st.form("form_warrior", clear_on_submit=True):
         nombre = st.text_input("👤 Cliente:")
         celular = st.text_input("📱 WhatsApp (ej: 09...):")
         # Cambio aquí: Ahora es más general para maletas, mochilas, etc.
-        articulo = st.text_input("💼 Tipo de Artículo (Zapato, Maleta, Chompa):")
+        articulo = st.text_input("💼 Tipo de Articulo (Zapato, Maleta, Chompa):")
     with col2:
         reparacion = st.text_input("🛠️ Reparación a realizar:")
         total = st.number_input("💰 Total ($):", min_value=0.0)
@@ -86,8 +86,8 @@ if submit:
             "🛡️ *THE WARRIOR BROTHERS*\n"
             "------------------------------------------\n"
             f"¡Hola *{nombre.upper()}*! ✅\n"
-            "Confirmamos la recepción de su artículo:\n\n"
-            f"💼 *Artículo:* {articulo}\n"
+            "Confirmamos la recepción de su articulo:\n\n"
+            f"💼 *Articulo:* {articulo}\n"
             f"🛠️ *Trabajo:* {reparacion}\n"
             "------------------------------------------\n"
             f"💰 *Total:* ${total:.2f}\n"

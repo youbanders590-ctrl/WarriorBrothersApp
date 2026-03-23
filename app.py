@@ -49,7 +49,7 @@ if submit:
         ahora = datetime.now(zona_ec)
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
-        # --- 3. GUARDADO EN GOOGLE SHEETS (CORREGIDO) ---
+        # --- 3. GUARDADO EN GOOGLE SHEETS (LIMPIO) ---
         try:
             conn = st.connection("gsheets", type=GSheetsConnection)
             
@@ -72,7 +72,7 @@ if submit:
             # 3. Unir los datos
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
             
-            # 4. Subir los datos al Excel
+            # 4. Enviar al Excel (Sin asignar a ninguna variable)
             conn.update(worksheet="Hoja 1", data=df_final)
             
             st.success("✅ ¡Registro guardado exitosamente!")

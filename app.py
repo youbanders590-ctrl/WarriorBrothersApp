@@ -74,7 +74,7 @@ if submit:
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
             
             # 4. Enviar al Excel (Sin asignar a ninguna variable)
-            conn.update(worksheet="Hoja 1", data=df_final)
+            conn.update(worksheet="Hoja 1", data=df_final, overwrite=True)
             
             st.success("✅ ¡Registro guardado exitosamente!")
             

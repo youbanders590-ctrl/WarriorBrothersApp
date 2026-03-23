@@ -33,8 +33,7 @@ with st.form("form_warrior", clear_on_submit=True):
     with col1:
         nombre = st.text_input("👤 Cliente:")
         celular = st.text_input("📱 WhatsApp (ej: 09...):")
-        # Cambio aquí: Ahora es más general para maletas, mochilas, etc.
-        articulo = st.text_input("💼 Tipo de Articulo (Zapato, Maleta, Chompa):")
+        articulo = st.text_input("💼 Tipo de Artículo (Zapato, Maleta, Chompa):")
     with col2:
         reparacion = st.text_input("🛠️ Reparación a realizar:")
         total = st.number_input("💰 Total ($):", min_value=0.0)
@@ -50,14 +49,14 @@ if submit:
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
 
-# --- 3. GUARDADO EN GOOGLE SHEETS (LIMPIO) ---
+        # --- 3. GUARDADO EN GOOGLE SHEETS ---
         try:
             conn = st.connection("gsheets", type=GSheetsConnection)
             
-            # 1. Leer datos actuales
+            # Leer datos de la pestaña "Registro"
             df_actual = conn.read(worksheet="Registro", ttl=0)
             
-            # 2. Crear la nueva fila
+            # Crear la nueva fila (Nombres idénticos a tu Excel)
             nueva_fila = pd.DataFrame([{
                 "Fecha": f_h,
                 "Cliente": nombre.upper(),
@@ -70,46 +69,42 @@ if submit:
                 "Entrega": f_e
             }])
             
-            # 3. Unir los datos
+            # Unir y subir
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
+            conn.update(worksheet="Registro", data=df_final)
             
-            # 4. Enviar al Excel (Sin asignar a ninguna variable)
-            conn.update(worksheet="Registro", data=df_final, overwrite=True)
+            st.success("✅ ¡Registro guardado en el Excel!")
             
-            st.success("✅ ¡Registro guardado exitosamente!")
+            # --- 4. WHATSAPP ---
+            msg_wa = (
+                "🛡️ *THE WARRIOR BROTHERS*\n"
+                "------------------------------------------\n"
+                f"¡Hola *{nombre.upper()}*! ✅\n"
+                "Confirmamos la recepción de su artículo:\n\n"
+                f"💼 *Artículo:* {articulo}\n"
+                f"🛠️ *Trabajo:* {reparacion}\n"
+                "------------------------------------------\n"
+                f"💰 *Total:* ${total:.2f}\n"
+                f"💵 *Abono:* ${abono:.2f}\n"
+                f"💳 *Saldo pendiente:* *${saldo:.2f}*\n"
+                "------------------------------------------\n"
+                f"📅 *Entrega estimada:* {f_e}\n\n"
+                "¡Gracias por su confianza! ✨"
+            )
             
+            texto_url = urllib.parse.quote(msg_wa)
+            link_wa = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={texto_url}"
+            
+            st.markdown(f"""
+                <a href="{link_wa}" target="_blank" style="text-decoration:none;">
+                    <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px;">
+                        📲 ENVIAR RECIBO POR WHATSAPP
+                    </div>
+                </a>
+            """, unsafe_allow_html=True)
+
         except Exception as e:
             st.error(f"Error al guardar: {e}")
-        
-        # --- 4. WHATSAPP ACTUALIZADO (PARA TODO TIPO DE ARTÍCULOS) ---
-        msg_wa = (
-            "🛡️ *THE WARRIOR BROTHERS*\n"
-            "------------------------------------------\n"
-            f"¡Hola *{nombre.upper()}*! ✅\n"
-            "Confirmamos la recepción de su articulo:\n\n"
-            f"💼 *Articulo:* {articulo}\n"
-            f"🛠️ *Trabajo:* {reparacion}\n"
-            "------------------------------------------\n"
-            f"💰 *Total:* ${total:.2f}\n"
-            f"💵 *Abono:* ${abono:.2f}\n"
-            f"💳 *Saldo pendiente:* *${saldo:.2f}*\n"
-            "------------------------------------------\n"
-            f"📅 *Entrega estimada:* {f_e}\n\n"
-            "⚠️ *NOTA IMPORTANTE:*\n"
-            "- Una vez ingresada la obra, no se realizarán devoluciones de abonos ni entregas antes de la fecha acordada.\n"
-            "- Los trabajos no retirados pasados los 2 meses serán liquidados para cubrir costos de material.\n\n"
-            "¡Gracias por su confianza! ✨"
-        )
-        
-        texto_url = urllib.parse.quote(msg_wa)
-        link_wa = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={texto_url}"
-        
-        st.markdown(f"""
-            <a href="{link_wa}" target="_blank" style="text-decoration:none;">
-                <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px;">
-                    📲 ENVIAR RECIBO POR WHATSAPP
-                </div>
-            </a>
-        """, unsafe_allow_html=True)
+            st.info("Asegúrate de que los nombres de las columnas en el Excel sean: Fecha, Cliente, Celular, Articulo, Reparacion, Total, Abono, Saldo, Entrega")
     else:
         st.error("⚠️ Por favor completa el nombre y el celular.")

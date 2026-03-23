@@ -49,17 +49,19 @@ if submit:
         ahora = datetime.now(zona_ec)
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
-        
-        # --- 3. GUARDADO EN GOOGLE SHEETS ---
+        # --- 3. GUARDADO EN GOOGLE SHEETS (CORREGIDO) ---
         try:
             conn = st.connection("gsheets", type=GSheetsConnection)
+            
+            # 1. Leer datos actuales
             df_actual = conn.read(worksheet="Hoja 1", ttl=0)
             
+            # 2. Crear la nueva fila
             nueva_fila = pd.DataFrame([{
                 "Fecha": f_h,
                 "Cliente": nombre.upper(),
                 "Celular": celular,
-                "Calzado": articulo, # Mantenemos el nombre de la columna para no romper tu Excel
+                "Calzado": articulo,
                 "Reparacion": reparacion,
                 "Total": f"{total:.2f}",
                 "Abono": f"{abono:.2f}",
@@ -67,13 +69,17 @@ if submit:
                 "Entrega": f_e
             }])
             
+            # 3. Unir los datos
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
+            
+            # 4. Subir los datos al Excel
             conn.update(worksheet="Hoja 1", data=df_final)
+            
             st.success("✅ ¡Registro guardado exitosamente!")
             
         except Exception as e:
             st.error(f"Error al guardar: {e}")
-
+       
         # --- 4. WHATSAPP ACTUALIZADO (PARA TODO TIPO DE ARTÍCULOS) ---
         msg_wa = (
             "🛡️ *THE WARRIOR BROTHERS*\n"

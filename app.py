@@ -48,33 +48,26 @@ if submit:
         ahora = datetime.now(zona_ec)
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
-
-        # --- 3. GUARDADO EN GOOGLE SHEETS ---
+# --- 3. GUARDADO EN GOOGLE SHEETS (VERSIÓN SEGURA) ---
         try:
             conn = st.connection("gsheets", type=GSheetsConnection)
             
-            # 1. Crear la nueva fila con los datos
-            nueva_fila = pd.DataFrame([{
-                "Fecha": f_h,
-                "Cliente": nombre.upper(),
-                "Celular": celular,
-                "Articulo": articulo,
-                "Reparacion": reparacion,
-                "Total": f"{total:.2f}",
-                "Abono": f"{abono:.2f}",
-                "Saldo": f"{saldo:.2f}",
-                "Entrega": f_e
-            }])
-            
-            # 2. Leer lo que ya existe
-            df_actual = conn.read(worksheet="Data", ttl=0)
-            
-            # 3. Juntar y actualizar
+            # Forzamos la lectura de la pestaña Data
+            try:
+                df_actual = conn.read(worksheet="Data", ttl=0)
+            except:
+                df_actual = pd.DataFrame() # Si falla al leer, crea uno vacío
+
+            # Juntar datos
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
-            conn.update(worksheet="Data", data=df_final)
             
-            st.success("✅ ¡Data guardado exitosamente!")
-       
+            # ELIMINAR COLUMNAS FANTASMA (Esto evita el Error 400)
+            df_final = df_final.loc[:, ~df_final.columns.str.contains('^Unnamed')]
+            
+            # Actualizar
+            conn.update(worksheet="Data", data=df_final)
+            st.success("✅ ¡Datos guardados en la pestaña Data!")
+        
             
             # --- 4. WHATSAPP ---
             msg_wa = (

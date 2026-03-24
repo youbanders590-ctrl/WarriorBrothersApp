@@ -30,16 +30,14 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # --- 2. APLICACIÓN PRINCIPAL ---
-# TÉCNICA AVANZADA: Usamos columnas para forzar el centro perfecto
-_, center_col, _ = st.columns([1, 2, 1]) 
-with center_col:
-    # El ancho 300 hará que el lobo se vea imponente y bien centrado
-    st.image("logo.png", width=300) 
+# --- LOGO PEQUEÑO A LA IZQUIERDA ---
+col_icono, col_titulo = st.columns([0.15, 0.85]) # Una columna mini para el logo y otra para el texto
+with col_icono:
+    st.image("logo.png", width=60) # Logo pequeño como un icono
+with col_titulo:
+    st.title("THE WARRIOR BROTHERS")
+st.subheader("Especialistas en Cuero y Calzado")
 
-# Títulos centrados y sin el diamante azul
-st.markdown("<h1 style='text-align: center;'>THE WARRIOR BROTHERS</h1>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center;'>Especialistas en Cuero y Calzado</h3>", unsafe_allow_html=True)
-st.markdown("<br>", unsafe_allow_html=True) # Un espacio elegante antes del formulario
 
 with st.form("form_warrior", clear_on_submit=True):
     col1, col2 = st.columns(2)

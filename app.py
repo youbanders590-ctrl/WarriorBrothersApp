@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import urllib.parse
 import pytz
-from streamlit_gsheets import GSheetsConnection  # Asegúrate de que esta línea esté presente
+from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Warrior Brothers Admin", page_icon="🛡️")
@@ -64,24 +64,26 @@ if submit:
 
         # --- CONEXIÓN ---
         try:
-            # CAMBIO CLAVE: Se agrega el tipo de conexión explícito
+            # Conexión configurada correctamente para evitar errores de service_account
             conn = st.connection("gsheets", type=GSheetsConnection)
 
             try:
+                # Leemos la hoja "Data" (asegúrate que así se llame la pestaña en tu Excel)
                 df_actual = conn.read(worksheet="Data", ttl=0)
-                # Limpiar columnas vacías "Unnamed" que a veces crea Google Sheets
+                # Limpiar posibles columnas vacías
                 df_actual = df_actual.loc[:, ~df_actual.columns.str.contains('^Unnamed')]
             except Exception:
                 df_actual = pd.DataFrame()
 
+            # Unimos los datos nuevos con los viejos
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
             
-            # Guardar en la hoja "Data"
+            # Subimos de nuevo al Excel
             conn.update(worksheet="Data", data=df_final)
 
             st.success("✅ ¡Registro guardado exitosamente en Google Sheets!")
 
-            # --- WHATSAPP ---
+            # --- GENERADOR DE WHATSAPP ---
             msg_wa = (
                 "🛡️ *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
@@ -99,6 +101,7 @@ if submit:
             )
 
             texto_url = urllib.parse.quote(msg_wa)
+            # Formato de link compatible con móviles
             link_wa = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={texto_url}"
 
             st.markdown(f"""
@@ -110,10 +113,9 @@ if submit:
             """, unsafe_allow_html=True)
 
         except Exception as e:
-            st.error(f"❌ Error al guardar: {e}")
-            st.info("Asegúrate de que la versión de Python en Streamlit sea 3.11 y los Secrets estén bien pegados.")
+            st.error(f"❌ Error de conexión: {e}")
+            st.info("Revisa que los Secrets en Streamlit tengan el formato TOML correcto.")
 
     else:
         st.error("⚠️ Por favor completa el nombre y el celular.")
-
 

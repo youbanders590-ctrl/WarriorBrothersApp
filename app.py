@@ -83,7 +83,7 @@ if submit:
 
             st.success("✅ ¡Registro guardado exitosamente en Google Sheets!")
 
-            # --- GENERADOR DE WHATSAPP ---
+            # --- GENERADOR DE WHATSAPP CON NOTA IMPORTANTE ---
             msg_wa = (
                 "🛡️ *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
@@ -97,6 +97,9 @@ if submit:
                 f"💳 *Saldo pendiente:* *${saldo:.2f}*\n"
                 "------------------------------------------\n"
                 f"📅 *Entrega estimada:* {f_e}\n\n"
+                "⚠️ *NOTA IMPORTANTE:*\n"
+                "- Una vez ingresada la obra, no se realizarán devoluciones de abonos ni entregas antes de la fecha acordada.\n"
+                "- Los trabajos no retirados pasados los 2 meses serán liquidados para cubrir costos de material.\n\n"
                 "¡Gracias por su confianza! ✨"
             )
 

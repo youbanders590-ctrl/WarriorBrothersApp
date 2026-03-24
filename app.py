@@ -6,7 +6,11 @@ import pytz
 from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURACIÓN ---
-st.set_page_config(page_title="Warrior Brothers Admin", page_icon="🛡️")
+st.set_page_config(
+    page_title="THE WARRIOR BROTHERS",
+    page_icon="logo.png",
+    layout="wide"
+)
 zona_ec = pytz.timezone('America/Guayaquil')
 hoy_ecuador = datetime.now(zona_ec).date()
 
@@ -26,7 +30,12 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # --- 2. APLICACIÓN PRINCIPAL ---
-st.title("🛡️ Los Hermanos Guerreros")
+# Esto centra tu logo arriba de todo
+col_logo1, col_logo2, col_logo3 = st.columns([1, 1, 1])
+with col_logo2:
+    st.image("logo.png", width=200)
+
+st.title("🛡️ THE WARRIOR BROTHERS")
 st.subheader("Especialistas en Cuero y Calzado")
 
 with st.form("form_warrior", clear_on_submit=True):

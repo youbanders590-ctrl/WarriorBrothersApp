@@ -8,6 +8,7 @@ from streamlit_gsheets import GSheetsConnection
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Warrior Brothers Admin", page_icon="🛡️")
 zona_ec = pytz.timezone('America/Guayaquil')
+hoy_ecuador = datetime.now(zona_ec).date()
 
 # --- 1. SEGURIDAD ---
 if "autenticado" not in st.session_state:
@@ -38,7 +39,8 @@ with st.form("form_warrior", clear_on_submit=True):
         reparacion = st.text_input("🛠️ Reparación a realizar:")
         total = st.number_input("💰 Total ($):", min_value=0.0)
         abono = st.number_input("💵 Abono ($):", min_value=0.0)
-        dias = st.number_input("📅 Días para entrega:", min_value=1, value=3)
+        # CAMBIO AQUÍ: Ahora es un calendario, no un número
+        fecha_entrega = st.date_input("📅 Fecha de entrega:", value=hoy_ecuador, min_value=hoy_ecuador)
     
     submit = st.form_submit_button("💾 GUARDAR Y GENERAR RECIBO")
 
@@ -48,7 +50,8 @@ if submit:
         saldo = total - abono
         ahora = datetime.now(zona_ec)
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
-        f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
+        # Tomamos la fecha del calendario y la ponemos en formato día/mes/año
+        f_e = fecha_entrega.strftime("%d/%m/%Y")
 
         nueva_fila = pd.DataFrame([{
             "Fecha": f_h,
@@ -62,49 +65,46 @@ if submit:
             "Entrega": f_e
         }])
 
-        # --- CONEXIÓN ---
+        # --- CONEXIÓN A GOOGLE SHEETS ---
         try:
-            # Conexión configurada correctamente para evitar errores de service_account
             conn = st.connection("gsheets", type=GSheetsConnection)
-
             try:
-                # Leemos la hoja "Data" (asegúrate que así se llame la pestaña en tu Excel)
                 df_actual = conn.read(worksheet="Data", ttl=0)
-                # Limpiar posibles columnas vacías
                 df_actual = df_actual.loc[:, ~df_actual.columns.str.contains('^Unnamed')]
             except Exception:
                 df_actual = pd.DataFrame()
 
-            # Unimos los datos nuevos con los viejos
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
-            
-            # Subimos de nuevo al Excel
             conn.update(worksheet="Data", data=df_final)
 
-            st.success("✅ ¡Registro guardado exitosamente en Google Sheets!")
+            st.success(f"✅ ¡Guardado en Excel para el {f_e}!")
 
-            # --- GENERADOR DE WHATSAPP CON NOTA IMPORTANTE ---
+            # --- GENERADOR DE WHATSAPP ---
+            # Emojis en código para evitar errores de rombos
+            e_escudo, e_check, e_maleta = "\U0001F6E1", "\u2705", "\U0001F4BC"
+            e_llave, e_bolsa, e_billete = "\U0001F6E0", "\U0001F4B0", "\U0001F4B5"
+            e_tarjeta, e_calen, e_alerta, e_chispas = "\U0001F4B3", "\U0001F4D3", "\u26A0", "\u2728"
+
             msg_wa = (
-                "🛡️ *THE WARRIOR BROTHERS*\n"
+                f"{e_escudo} *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
-                f"¡Hola *{nombre.upper()}*! ✅\n"
+                f"¡Hola *{nombre.upper()}*! {e_check}\n"
                 "Confirmamos la recepción de su artículo:\n\n"
-                f"💼 *Artículo:* {articulo}\n"
-                f"🛠️ *Trabajo:* {reparacion}\n"
+                f"{e_maleta} *Artículo:* {articulo}\n"
+                f"{e_llave} *Trabajo:* {reparacion}\n"
                 "------------------------------------------\n"
-                f"💰 *Total:* ${total:.2f}\n"
-                f"💵 *Abono:* ${abono:.2f}\n"
-                f"💳 *Saldo pendiente:* *${saldo:.2f}*\n"
+                f"{e_bolsa} *Total:* ${total:.2f}\n"
+                f"{e_billete} *Abono:* ${abono:.2f}\n"
+                f"{e_tarjeta} *Saldo pendiente:* *${saldo:.2f}*\n"
                 "------------------------------------------\n"
-                f"📅 *Entrega estimada:* {f_e}\n\n"
-                "⚠️ *NOTA IMPORTANTE:*\n"
-                "- Una vez ingresada la obra, no se realizarán devoluciones de abonos ni entregas antes de la fecha acordada.\n"
-                "- Los trabajos no retirados pasados los 2 meses serán liquidados para cubrir costos de material.\n\n"
-                "¡Gracias por su confianza! ✨"
+                f"{e_calen} *Entrega estimada:* {f_e}\n\n"
+                f"{e_alerta} *NOTA IMPORTANTE:*\n"
+                "- Una vez ingresada la obra, no se realizarán devoluciones.\n"
+                "- Trabajos no retirados en 2 meses serán liquidados.\n\n"
+                f"¡Gracias por su confianza! {e_chispas}"
             )
 
             texto_url = urllib.parse.quote(msg_wa)
-            # Formato de link compatible con móviles
             link_wa = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={texto_url}"
 
             st.markdown(f"""
@@ -117,8 +117,7 @@ if submit:
 
         except Exception as e:
             st.error(f"❌ Error de conexión: {e}")
-            st.info("Revisa que los Secrets en Streamlit tengan el formato TOML correcto.")
+            st.info("Asegúrate de configurar los 'Secrets' en Streamlit para Google Sheets.")
 
     else:
         st.error("⚠️ Por favor completa el nombre y el celular.")
-

@@ -30,15 +30,18 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # --- 2. APLICACIÓN PRINCIPAL ---
-# --- LOGO PEQUEÑO A LA IZQUIERDA ---
-col_icono, col_titulo = st.columns([0.15, 0.85]) # Una columna mini para el logo y otra para el texto
-with col_icono:
-    st.image("logo.png", width=60) # Logo pequeño como un icono
-with col_titulo:
-    st.title("THE WARRIOR BROTHERS")
-st.subheader("Especialistas en Cuero y Calzado")
-
-
+# --- LOGO Y TÍTULO PEGADOS Y CENTRADOS ---
+st.markdown(
+    """
+    <div style='display: flex; align-items: center; justify-content: center; gap: 15px;'>
+        <img src='https://raw.githubusercontent.com/youbanders590-ctrl/WarriorBrothersApp/main/logo.png' style='height: 50px;'>
+        <h1 style='margin: 0;'>THE WARRIOR BROTHERS</h1>
+    </div>
+    <h3 style='text-align: center; color: #888; margin-top: 5px;'>Especialistas en Cuero y Calzado</h3>
+    <br>
+    """,
+    unsafe_allow_html=True
+)
 with st.form("form_warrior", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:

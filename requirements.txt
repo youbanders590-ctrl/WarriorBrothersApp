@@ -2,3 +2,7 @@ streamlit
 pandas
 pytz
 st-gsheets-connection
+streamlit
+streamlit-gsheets
+gspread
+oauth2client

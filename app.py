@@ -1,9 +1,9 @@
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 import urllib.parse
 import pytz
+from streamlit_gsheets import GSheetsConnection  # Asegúrate de que esta línea esté presente
 
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Warrior Brothers Admin", page_icon="🛡️")
@@ -62,19 +62,21 @@ if submit:
             "Entrega": f_e
         }])
 
-        # --- CONEXIÓN CORRECTA ---
+        # --- CONEXIÓN ---
         try:
-            conn = st.connection("gsheets")
+            # CAMBIO CLAVE: Se agrega el tipo de conexión explícito
+            conn = st.connection("gsheets", type=GSheetsConnection)
 
             try:
                 df_actual = conn.read(worksheet="Data", ttl=0)
-            except Exception as e:
-                st.warning(f"No se pudo leer la hoja (se creará nueva): {e}")
+                # Limpiar columnas vacías "Unnamed" que a veces crea Google Sheets
+                df_actual = df_actual.loc[:, ~df_actual.columns.str.contains('^Unnamed')]
+            except Exception:
                 df_actual = pd.DataFrame()
 
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
-            df_final = df_final.loc[:, ~df_final.columns.str.contains('^Unnamed')]
-
+            
+            # Guardar en la hoja "Data"
             conn.update(worksheet="Data", data=df_final)
 
             st.success("✅ ¡Registro guardado exitosamente en Google Sheets!")
@@ -109,8 +111,9 @@ if submit:
 
         except Exception as e:
             st.error(f"❌ Error al guardar: {e}")
-            st.info("Verifica conexión, permisos y nombre de hoja 'Data'.")
+            st.info("Asegúrate de que la versión de Python en Streamlit sea 3.11 y los Secrets estén bien pegados.")
 
     else:
         st.error("⚠️ Por favor completa el nombre y el celular.")
+
 

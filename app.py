@@ -1,9 +1,9 @@
+```python
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 import urllib.parse
 import pytz
-from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Warrior Brothers Admin", page_icon="🛡️")
@@ -44,13 +44,12 @@ with st.form("form_warrior", clear_on_submit=True):
 
 if submit:
     if nombre and celular:
-        # --- CÁLCULOS INICIALES ---
+        # --- CÁLCULOS ---
         saldo = total - abono
         ahora = datetime.now(zona_ec)
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = (ahora + timedelta(days=dias)).strftime("%d/%m/%Y")
 
-        # --- CREACIÓN DE LA FILA (Orden correcto para evitar error de definición) ---
         nueva_fila = pd.DataFrame([{
             "Fecha": f_h,
             "Cliente": nombre.upper(),
@@ -63,25 +62,24 @@ if submit:
             "Entrega": f_e
         }])
 
-        # --- 3. GUARDADO EN GOOGLE SHEETS ---
+        # --- CONEXIÓN CORRECTA ---
         try:
-            conn = st.connection("gsheets", type=GSheetsConnection)
-            
-            # Intentar leer la pestaña "Data"
+            conn = st.connection("gsheets")
+
             try:
                 df_actual = conn.read(worksheet="Data", ttl=0)
-            except:
+            except Exception as e:
+                st.warning(f"No se pudo leer la hoja (se creará nueva): {e}")
                 df_actual = pd.DataFrame()
 
-            # Unir y limpiar columnas invisibles (evita Error 400)
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
             df_final = df_final.loc[:, ~df_final.columns.str.contains('^Unnamed')]
-            
-            # Subir datos
+
             conn.update(worksheet="Data", data=df_final)
+
             st.success("✅ ¡Registro guardado exitosamente en Google Sheets!")
 
-            # --- 4. GENERACIÓN DE MENSAJE WHATSAPP ---
+            # --- WHATSAPP ---
             msg_wa = (
                 "🛡️ *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
@@ -97,10 +95,10 @@ if submit:
                 f"📅 *Entrega estimada:* {f_e}\n\n"
                 "¡Gracias por su confianza! ✨"
             )
-            
+
             texto_url = urllib.parse.quote(msg_wa)
             link_wa = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={texto_url}"
-            
+
             st.markdown(f"""
                 <a href="{link_wa}" target="_blank" style="text-decoration:none;">
                     <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px; margin-top:20px;">
@@ -110,7 +108,10 @@ if submit:
             """, unsafe_allow_html=True)
 
         except Exception as e:
-            st.error(f"Error al guardar: {e}")
-            st.info("Verifica que la pestaña del Excel se llame 'Data' y los encabezados coincidan.")
+            st.error(f"❌ Error al guardar: {e}")
+            st.info("Verifica conexión, permisos y nombre de hoja 'Data'.")
+
     else:
         st.error("⚠️ Por favor completa el nombre y el celular.")
+```
+

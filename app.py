@@ -6,10 +6,13 @@ import pytz
 from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURACIÓN ---
-st.set_page_config(page_title="Warrior Brothers Admin", page_icon="🛡️")
+st.set_page_config(
+    page_title="THE WARRIOR BROTHERS",
+    page_icon="logo.png",
+    layout="wide"
+)
 zona_ec = pytz.timezone('America/Guayaquil')
 hoy_ecuador = datetime.now(zona_ec).date()
-
 # --- 1. SEGURIDAD ---
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False

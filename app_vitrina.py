@@ -15,8 +15,7 @@ st.markdown("""
     .stApp { background-color: #fcfdfa; color: #1e1e1e; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
     
     /* Títulos Principales */
-    h1, h2, h3 { font-weight: 700; color: #1e1e1e; letter-spacing: -1px; }
-    h1 { font-size: 3.5rem; margin-bottom: 0.5rem; }
+    h1, h2, h3 { font-weight: 700; color: #1e1e1e; letter-spacing: -1px; margin: 0; }
     h2 { font-size: 2.2rem; border-bottom: 3px solid #1e1e1e; padding-bottom: 10px; margin-top: 40px; }
     
     /* Botones de WhatsApp */
@@ -38,22 +37,23 @@ st.markdown("""
     .service-card h4 { margin-top: 15px; font-weight: 600; font-size: 1.3rem; }
     .service-card p { color: #555; font-size: 0.95rem; }
     
-    /* Estilo del Encabezado con Logo (Tipo Recibo) */
+    /* Estilo del Encabezado con Logo a lado */
     .header-container {
-        display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+        display: flex; align-items: center; justify-content: center; margin-bottom: 25px;
     }
     .header-logo {
-        max-width: 100px; height: auto; margin-right: 25px; /* Margen a la derecha para separar del texto */
-        filter: brightness(0) invert(1); /* Hack para convertir el logo negro a blanco si es necesario */
+        max-width: 80px; height: auto; margin-right: 15px; /* Espacio a la derecha */
+        filter: brightness(0) invert(1); /* Convierte el logo a blanco sobre fondo negro */
     }
     .header-title {
-        color: white; font-weight: 900; letter-spacing: -1px; font-family: 'Arial Black', Gadget, sans-serif; margin: 0;
+        color: white !important; font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; margin: 0;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 1. SECCIÓN HÉROE (CON TU LOGO PNG OFICIAL Y ALINEACIÓN DE RECIBO) ---
-st.markdown(f"""
+# --- 1. SECCIÓN HÉROE (CON TU LOGO A LADO DEL TÍTULO) ---
+# Usamos filter: brightness(0) invert(1) para asegurar que el logo sea blanco sobre negro
+st.markdown("""
     <div style="background-color: #1e1e1e; color: white; padding: 100px 40px; text-align: center; border-radius: 20px; margin-bottom: 50px;">
         
         <div class="header-container">
@@ -62,7 +62,7 @@ st.markdown(f"""
         </div>
         
         <p style="font-size: 1.6rem; font-weight: 300; color: #ccc;">Maestría en Restauración de Calzado y Cuero</p>
-        <p style="font-size: 1.1rem; margin-top: 20px; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+        <p style="font-size: 1.1rem; margin-top: 20px; max-width: 800px; margin-left: auto; margin-right: auto;">
             No solo reparamos, devolvemos la esencia a tus artículos favoritos. Artesanía lojana con precisión digital.
         </p>
         <br>
@@ -72,13 +72,15 @@ st.markdown(f"""
 
 # --- 2. SECCIÓN DE SERVICIOS ---
 st.header("🛠️ Especialidades del Taller")
+st.markdown("Cada pieza es tratada como una obra de arte.")
+
 col1, col2, col3, col4 = st.columns(4)
 
 servicios = [
-    ["Suelas y Pisos", "Cambio de suelas de caucho, cuero y montaña.", "👞🔨"],
-    ["Tinturado", "Restauración de color profesional para cuero y gamuza.", "🎨🖌️"],
-    ["Tacos y Tapas", "Arreglo preciso para calzado de dama y caballero.", "👠👠"],
-    ["Accesorios", "Reparación de maletas, mochilas y costuras de chompas.", "🎒💼"]
+    ["Suelas y Pisos", "Cambio de suelas de caucho, cuero y montaña.", "👞"],
+    ["Tinturado", "Restauración de color profesional para cuero y gamuza.", "🎨"],
+    ["Tacos y Tapas", "Arreglo preciso para calzado de dama y caballero.", "👠"],
+    ["Accesorios", "Reparación de maletas, mochilas y costuras de chompas.", "🎒"]
 ]
 
 for col, ser in zip([col1, col2, col3, col4], servicios):

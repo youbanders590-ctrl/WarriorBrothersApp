@@ -90,15 +90,16 @@ if submit:
 
             st.success(f"✅ ¡Guardado en Excel para el {f_e}!")
 
-            # --- GENERADOR DE WHATSAPP (VERSIÓN DINÁMICA SIN REPETICIÓN) ---
-            # Emojis en código para evitar errores de rombos
-            e_escudo, e_check = "\U0001F6E1", "\u2705"
+     # --- GENERADOR DE WHATSAPP (CON EMOJI DE LOBO) ---
+            # Definimos los emojis por código para que no den error
+            # Reemplazamos el escudo por el lobo 🐺
+            e_lobo, e_check = "\U0001F43A", "\u2705"
             e_llave, e_bolsa, e_billete = "\U0001F6E0", "\U0001F4B0", "\U0001F4B5"
             e_tarjeta, e_calen, e_alerta, e_chispas = "\U0001F4B3", "\U0001F4D3", "\u26A0", "\u2728"
 
-            # Aquí la frase inteligente que usa el artículo directamente
+            # Creamos el mensaje final dinámico
             msg_wa = (
-                f"{e_escudo} *THE WARRIOR BROTHERS*\n"
+                f"{e_lobo} *THE WARRIOR BROTHERS*\n" # <-- ¡Aquí está el cambio!
                 "------------------------------------------\n"
                 f"¡Hola *{nombre.upper()}*! {e_check}\n"
                 f"Confirmamos la recepción de su *{articulo.lower()}*:\n\n"

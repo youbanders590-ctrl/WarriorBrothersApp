@@ -6,11 +6,7 @@ import pytz
 from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURACIÓN ---
-st.set_page_config(
-    page_title="THE WARRIOR BROTHERS",
-    page_icon="logo.png",
-    layout="wide"
-)
+st.set_page_config(page_title="Warrior Brothers Admin", page_icon="🛡️")
 zona_ec = pytz.timezone('America/Guayaquil')
 hoy_ecuador = datetime.now(zona_ec).date()
 
@@ -30,18 +26,9 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # --- 2. APLICACIÓN PRINCIPAL ---
-# --- LOGO Y TÍTULO PEGADOS Y CENTRADOS ---
-st.markdown(
-    """
-    <div style='display: flex; align-items: center; justify-content: center; gap: 15px;'>
-        <img src='https://raw.githubusercontent.com/youbanders590-ctrl/WarriorBrothersApp/main/logo.png' style='height: 50px;'>
-        <h1 style='margin: 0;'>THE WARRIOR BROTHERS</h1>
-    </div>
-    <h3 style='text-align: center; color: #888; margin-top: 5px;'>Especialistas en Cuero y Calzado</h3>
-    <br>
-    """,
-    unsafe_allow_html=True
-)
+st.title("🛡️ Los Hermanos Guerreros")
+st.subheader("Especialistas en Cuero y Calzado")
+
 with st.form("form_warrior", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:

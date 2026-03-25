@@ -90,15 +90,16 @@ if submit:
 
             st.success(f"✅ ¡Guardado en Excel para el {f_e}!")
 
-    # --- GENERADOR DE WHATSAPP (VERSIÓN LOBO NEGRO) ---
-            # Usamos el lobo y un diamante pequeño para máxima elegancia
-            e_lobo_negro, e_check = "\U0001F43A \U0001F532", "\u2705"
+   # --- GENERADOR DE WHATSAPP (ESTILO BRITÁNICO) ---
+            # Bandera de Inglaterra (UK) + Zapato clásico
+            e_uk, e_zapato = "\U0001F1EC\U0001F1E7", "\U0001F45E"
+            e_check = "\u2705"
             e_llave, e_bolsa, e_billete = "\U0001F6E0", "\U0001F4B0", "\U0001F4B5"
             e_tarjeta, e_calen, e_alerta, e_chispas = "\U0001F4B3", "\U0001F4D3", "\u26A0", "\u2728"
 
-            # El mensaje ahora empieza con el Lobo Negro
+            # El encabezado ahora tiene ese toque internacional
             msg_wa = (
-                f"{e_lobo_negro} *THE WARRIOR BROTHERS*\n"
+                f"{e_uk}{e_zapato} *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
                 f"¡Hola *{nombre.upper()}*! {e_check}\n"
                 f"Confirmamos la recepción de su *{articulo.lower()}*:\n\n"

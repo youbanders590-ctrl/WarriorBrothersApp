@@ -1,94 +1,123 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
 import pandas as pd
-from datetime import datetime
-from pytz import timezone
+from datetime import datetime, timedelta
+import urllib.parse
+import pytz
+from streamlit_gsheets import GSheetsConnection
 
-# --- CONFIGURACIÓN DE LA PÁGINA ---
-st.set_page_config(page_title="The Warrior Brothers", layout="centered", page_icon="🛡️")
+# --- CONFIGURACIÓN ---
+st.set_page_config(page_title="Warrior Brothers Admin", page_icon="🛡️")
+zona_ec = pytz.timezone('America/Guayaquil')
+hoy_ecuador = datetime.now(zona_ec).date()
 
-# --- DISEÑO PARA CENTRAR LOGO Y TÍTULO ---
-# Usamos columnas para que el logo quede en el centro exacto
-col_izq, col_centro, col_der = st.columns([2, 1, 2])
+# --- 1. SEGURIDAD ---
+if "autenticado" not in st.session_state:
+    st.session_state["autenticado"] = False
 
-with col_centro:
-    # Como ya veo que tienes 'logo.png' en tu GitHub, lo llamamos directo
-    st.image("logo.png", width=85) 
+if not st.session_state["autenticado"]:
+    st.title("🔐 Acceso Privado")
+    password = st.text_input("Ingresa la contraseña:", type="password")
+    if st.button("Entrar"):
+        if password == "WARRIOR2026":
+            st.session_state["autenticado"] = True
+            st.rerun()
+        else:
+            st.error("Contraseña incorrecta.")
+    st.stop()
 
-# Título y subtítulo centrados
-st.markdown("<h1 style='text-align: center;'>THE WARRIOR BROTHERS</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-size: 1.2em;'>Zapatería y Restauración de Cuero</p>", unsafe_allow_html=True)
-st.divider()
+# --- 2. APLICACIÓN PRINCIPAL ---
+st.title("🛡️ Los Hermanos Guerreros")
+st.subheader("Especialistas en Cuero y Calzado")
 
-# --- CONEXIÓN A GOOGLE SHEETS ---
-conn = st.connection("gsheets", type=GSheetsConnection)
-
-# --- FECHA ACTUAL (ECUADOR) ---
-ec_tz = timezone('America/Guayaquil')
-fecha_actual = datetime.now(ec_tz).strftime("%d/%m/%Y %H:%M")
-
-# --- FORMULARIO DE REGISTRO ---
-with st.form("registro_trabajo", clear_on_submit=True):
-    st.markdown(f"📅 **Fecha de Ingreso:** `{fecha_actual}`")
+with st.form("form_warrior", clear_on_submit=True):
+    col1, col2 = st.columns(2)
+    with col1:
+        nombre = st.text_input("👤 Cliente:")
+        celular = st.text_input("📱 WhatsApp (ej: 09...):")
+        articulo = st.text_input("💼 Tipo de Artículo (Zapato, Maleta, Chompa):")
+    with col2:
+        reparacion = st.text_input("🛠️ Reparación a realizar:")
+        total = st.number_input("💰 Total ($):", min_value=0.0)
+        abono = st.number_input("💵 Abono ($):", min_value=0.0)
+        # CAMBIO AQUÍ: Ahora es un calendario, no un número
+        fecha_entrega = st.date_input("📅 Fecha de entrega:", value=hoy_ecuador, min_value=hoy_ecuador)
     
-    cliente = st.text_input("👤 Nombre del Cliente:").strip()
-    celular = st.text_input("📱 WhatsApp (sin el 0):")
-    articulo = st.text_input("👞 Artículo:")
-    reparacion = st.text_area("🛠️ Detalle de la Reparación:")
-    
-    c1, c2 = st.columns(2)
-    with c1:
-        total = st.number_input("💰 Valor Total $", min_value=0.0, step=0.5, format="%.2f")
-    with c2:
-        abono = st.number_input("💵 Abono Inicial $", min_value=0.0, step=0.5, format="%.2f")
-    
-    saldo = total - abono
-    st.markdown(f"<h3 style='text-align: center;'>Saldo Pendiente: ${saldo:.2f}</h3>", unsafe_allow_html=True)
-    
-    entrega = st.date_input("📆 Fecha de Entrega Prometida")
+    submit = st.form_submit_button("💾 GUARDAR Y GENERAR RECIBO")
 
-    # Botón centrado y grande
-    submit = st.form_submit_button("💾 GUARDAR REGISTRO")
-
-# --- LÓGICA DE GUARDADO ---
 if submit:
-    if cliente and articulo:
-        try:
-            nuevo_registro = pd.DataFrame([{
-                "Fecha": fecha_actual,
-                "Cliente": cliente.upper(),
-                "Celular": str(celular),
-                "Articulo": articulo.lower(),
-                "Reparacion": reparacion.lower(),
-                "Total": float(total),
-                "Abono": float(abono),
-                "Saldo": float(saldo),
-                "Entrega": entrega.strftime("%d/%m/%Y")
-            }])
+    if nombre and celular:
+        # --- CÁLCULOS ---
+        saldo = total - abono
+        ahora = datetime.now(zona_ec)
+        f_h = ahora.strftime("%d/%m/%Y %H:%M")
+        # Tomamos la fecha del calendario y la ponemos en formato día/mes/año
+        f_e = fecha_entrega.strftime("%d/%m/%Y")
 
-            df_actual = conn.read(worksheet="Data", ttl=0)
-            df_final = pd.concat([df_actual, nuevo_registro], ignore_index=True)
+        nueva_fila = pd.DataFrame([{
+            "Fecha": f_h,
+            "Cliente": nombre.upper(),
+            "Celular": celular,
+            "Articulo": articulo,
+            "Reparacion": reparacion,
+            "Total": f"{total:.2f}",
+            "Abono": f"{abono:.2f}",
+            "Saldo": f"{saldo:.2f}",
+            "Entrega": f_e
+        }])
+
+        # --- CONEXIÓN A GOOGLE SHEETS ---
+        try:
+            conn = st.connection("gsheets", type=GSheetsConnection)
+            try:
+                df_actual = conn.read(worksheet="Data", ttl=0)
+                df_actual = df_actual.loc[:, ~df_actual.columns.str.contains('^Unnamed')]
+            except Exception:
+                df_actual = pd.DataFrame()
+
+            df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
             conn.update(worksheet="Data", data=df_final)
 
-            st.success(f"✅ ¡Trabajo de {cliente.upper()} registrado!")
-            st.balloons()
-            
-            # Botón de WhatsApp
-            if celular:
-                mensaje = f"Hola {cliente.upper()}, THE WARRIOR BROTHERS confirma la recepción de tu {articulo}. Total: ${total:.2f}, Abono: ${abono:.2f}, Saldo: ${saldo:.2f}. Entrega: {entrega.strftime('%d/%m/%Y')}."
-                link_wa = f"https://wa.me/593{celular}?text={mensaje.replace(' ', '%20')}"
-                st.link_button("📲 Enviar Recibo por WhatsApp", link_wa)
+            st.success(f"✅ ¡Guardado en Excel para el {f_e}!")
+
+            # --- GENERADOR DE WHATSAPP ---
+            # Emojis en código para evitar errores de rombos
+            e_escudo, e_check, e_maleta = "\U0001F6E1", "\u2705", "\U0001F4BC"
+            e_llave, e_bolsa, e_billete = "\U0001F6E0", "\U0001F4B0", "\U0001F4B5"
+            e_tarjeta, e_calen, e_alerta, e_chispas = "\U0001F4B3", "\U0001F4D3", "\u26A0", "\u2728"
+
+            msg_wa = (
+                f"{e_escudo} *THE WARRIOR BROTHERS*\n"
+                "------------------------------------------\n"
+                f"¡Hola *{nombre.upper()}*! {e_check}\n"
+                "Confirmamos la recepción de su artículo:\n\n"
+                f"{e_maleta} *Artículo:* {articulo}\n"
+                f"{e_llave} *Trabajo:* {reparacion}\n"
+                "------------------------------------------\n"
+                f"{e_bolsa} *Total:* ${total:.2f}\n"
+                f"{e_billete} *Abono:* ${abono:.2f}\n"
+                f"{e_tarjeta} *Saldo pendiente:* *${saldo:.2f}*\n"
+                "------------------------------------------\n"
+                f"{e_calen} *Entrega estimada:* {f_e}\n\n"
+                f"{e_alerta} *NOTA IMPORTANTE:*\n"
+                "- Una vez ingresada la obra, no se realizarán devoluciones.\n"
+                "- Trabajos no retirados en 2 meses serán liquidados.\n\n"
+                f"¡Gracias por su confianza! {e_chispas}"
+            )
+
+            texto_url = urllib.parse.quote(msg_wa)
+            link_wa = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={texto_url}"
+
+            st.markdown(f"""
+                <a href="{link_wa}" target="_blank" style="text-decoration:none;">
+                    <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px; margin-top:20px;">
+                        📲 ENVIAR RECIBO POR WHATSAPP
+                    </div>
+                </a>
+            """, unsafe_allow_html=True)
 
         except Exception as e:
-            st.error(f"Hubo un detalle, mi rey: {e}")
-    else:
-        st.warning("⚠️ Nombre y Artículo son necesarios.")
+            st.error(f"❌ Error de conexión: {e}")
+            st.info("Asegúrate de configurar los 'Secrets' en Streamlit para Google Sheets.")
 
-# --- TABLA DE HISTORIAL ---
-st.divider()
-st.write("### 📋 Últimos 5 Registros")
-try:
-    df_vista = conn.read(worksheet="Data", ttl=0)
-    st.dataframe(df_vista.tail(5), use_container_width=True)
-except:
-    st.info("Cargando datos...")
+    else:
+        st.error("⚠️ Por favor completa el nombre y el celular.")

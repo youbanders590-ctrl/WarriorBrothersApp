@@ -37,19 +37,32 @@ st.markdown("""
     .service-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     .service-card h4 { margin-top: 15px; font-weight: 600; font-size: 1.3rem; }
     .service-card p { color: #555; font-size: 0.95rem; }
+    
+    /* Estilo del Encabezado con Logo (Tipo Recibo) */
+    .header-container {
+        display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+    }
+    .header-logo {
+        max-width: 100px; height: auto; margin-right: 25px; /* Margen a la derecha para separar del texto */
+        filter: brightness(0) invert(1); /* Hack para convertir el logo negro a blanco si es necesario */
+    }
+    .header-title {
+        color: white; font-weight: 900; letter-spacing: -1px; font-family: 'Arial Black', Gadget, sans-serif; margin: 0;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 1. SECCIÓN HÉROE (CON TU LOGO OFICIAL) ---
-# RECUERDA: Cambia 'URL_DE_TU_IMAGEN_PNG' por el enlace de tu logo que subiste a GitHub o ImgBB
-st.markdown("""
-    <div style="background-color: #1e1e1e; color: white; padding: 90px 40px; text-align: center; border-radius: 20px; margin-bottom: 50px;">
-        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-            <img src="URL_DE_TU_IMAGEN_PNG" style="max-width: 180px; height: auto; filter: brightness(0) invert(1);">
-        </div> 
-        <h1 style="color: white; margin-bottom: 10px;">The Warrior Brothers</h1>
+# --- 1. SECCIÓN HÉROE (CON TU LOGO PNG OFICIAL Y ALINEACIÓN DE RECIBO) ---
+st.markdown(f"""
+    <div style="background-color: #1e1e1e; color: white; padding: 100px 40px; text-align: center; border-radius: 20px; margin-bottom: 50px;">
+        
+        <div class="header-container">
+            <img src="logo.png" class="header-logo">
+            <h1 class="header-title">THE WARRIOR BROTHERS</h1>
+        </div>
+        
         <p style="font-size: 1.6rem; font-weight: 300; color: #ccc;">Maestría en Restauración de Calzado y Cuero</p>
-        <p style="font-size: 1.1rem; margin-top: 20px; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <p style="font-size: 1.1rem; margin-top: 20px; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.6;">
             No solo reparamos, devolvemos la esencia a tus artículos favoritos. Artesanía lojana con precisión digital.
         </p>
         <br>
@@ -62,10 +75,10 @@ st.header("🛠️ Especialidades del Taller")
 col1, col2, col3, col4 = st.columns(4)
 
 servicios = [
-    ["Suelas y Pisos", "Cambio de suelas de caucho, cuero y montaña.", "👞"],
-    ["Tinturado", "Restauración de color profesional para cuero y gamuza.", "🎨"],
-    ["Tacos y Tapas", "Arreglo preciso para calzado de dama y caballero.", "👠"],
-    ["Accesorios", "Reparación de maletas, mochilas y costuras de chompas.", "🎒"]
+    ["Suelas y Pisos", "Cambio de suelas de caucho, cuero y montaña.", "👞🔨"],
+    ["Tinturado", "Restauración de color profesional para cuero y gamuza.", "🎨🖌️"],
+    ["Tacos y Tapas", "Arreglo preciso para calzado de dama y caballero.", "👠👠"],
+    ["Accesorios", "Reparación de maletas, mochilas y costuras de chompas.", "🎒💼"]
 ]
 
 for col, ser in zip([col1, col2, col3, col4], servicios):

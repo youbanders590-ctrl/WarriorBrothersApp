@@ -29,9 +29,17 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # --- 2. APLICACIÓN PRINCIPAL ---
-st.title("🛡️ Los Hermanos Guerreros")
-st.subheader("Especialistas en Cuero y Calzado")
-
+st.markdown(
+    """
+    <div style='display: flex; align-items: center; justify-content: center; gap: 15px;'>
+        <img src='https://raw.githubusercontent.com/youbanders590-ctrl/WarriorBrothersApp/main/logo.png' style='height: 50px;'>
+        <h1 style='margin: 0;'>THE WARRIOR BROTHERS</h1>
+    </div>
+    <h3 style='text-align: center; color: #888; margin-top: 5px;'>Especialistas en Cuero y Calzado</h3>
+    <br>
+    """,
+    unsafe_allow_html=True
+)
 with st.form("form_warrior", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:

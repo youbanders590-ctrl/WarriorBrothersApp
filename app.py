@@ -90,16 +90,16 @@ if submit:
 
             st.success(f"✅ ¡Guardado en Excel para el {f_e}!")
 
-  # --- GENERADOR DE WHATSAPP (ESTILO ZAPATERÍA ARTESANAL) ---
-            # Martillo + Zapato (El símbolo del maestro zapatero)
-            e_martillo, e_zapato = "\U0001F528", "\U0001F45E"
+  # --- GENERADOR DE WHATSAPP (ORDEN: ZAPATO + MARTILLO) ---
+            # El zapato primero para la identidad, luego el martillo para el oficio
+            e_zapato, e_martillo = "\U0001F45E", "\U0001F528"
             e_check = "\u2705"
             e_llave, e_bolsa, e_billete = "\U0001F6E0", "\U0001F4B0", "\U0001F4B5"
             e_tarjeta, e_calen, e_alerta, e_chispas = "\U0001F4B3", "\U0001F4D3", "\u26A0", "\u2728"
 
-            # Encabezado que grita "OFICIO Y CALIDAD"
+            # El encabezado ahora fluye: Zapatería -> Herramientas -> Nombre
             msg_wa = (
-                f"{e_martillo}{e_zapato} *THE WARRIOR BROTHERS*\n"
+                f"{e_zapato}{e_martillo} *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
                 f"¡Hola *{nombre.upper()}*! {e_check}\n"
                 f"Confirmamos la recepción de su *{articulo.lower()}*:\n\n"
@@ -115,6 +115,20 @@ if submit:
                 "- Trabajos no retirados en 2 meses serán liquidados.\n\n"
                 f"¡Gracias por su confianza! {e_chispas}"
             )
+
+            # Preparación del link para WhatsApp
+            import urllib.parse
+            texto_url = urllib.parse.quote(msg_wa)
+            link_wa = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={texto_url}"
+
+            # Botón visual verde de WhatsApp
+            st.markdown(f"""
+                <a href="{link_wa}" target="_blank" style="text-decoration:none;">
+                    <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px; margin-top:20px;">
+                        📲 ENVIAR RECIBO POR WHATSAPP
+                    </div>
+                </a>
+            """, unsafe_allow_html=True)
             # Preparación del link para WhatsApp
             import urllib.parse
             texto_url = urllib.parse.quote(msg_wa)

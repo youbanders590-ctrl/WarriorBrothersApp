@@ -6,7 +6,7 @@ from datetime import datetime
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(page_title="The Warrior Brothers", layout="centered", page_icon="🛡️")
 
-# --- ESTILO PARA CENTRAR TODO ---
+# --- ESTILO PARA CENTRAR TODO (CORREGIDO) ---
 st.markdown("""
     <style>
     .block-container {
@@ -18,16 +18,16 @@ st.markdown("""
         justify-content: center;
     }
     </style>
-    """, unsafe_allow_key_url=True)
+    """, unsafe_allow_html=True) # <-- Aquí estaba el detalle, mi rey
 
 # --- LOGO PEQUEÑO Y CENTRADO ---
 logo_url = "https://raw.githubusercontent.com/mikekrieger79/warriorbrothersapp/main/logo.png"
 
-# Creamos columnas para forzar el centro del logo
+# Columnas para centrar el logo
 col_izq, col_centro, col_der = st.columns([2, 1, 2])
 with col_centro:
     try:
-        st.image(logo_url, width=80) # Logo pequeño como pediste
+        st.image(logo_url, width=80) 
     except:
         st.write("🛡️")
 
@@ -43,7 +43,6 @@ ahora = datetime.now()
 fecha_formateada = ahora.strftime("%d/%m/%Y %H:%M")
 
 # --- FORMULARIO DE REGISTRO ---
-# El formulario mantiene el orden pero con un diseño limpio
 with st.form("registro_trabajo", clear_on_submit=True):
     st.markdown(f"📅 **Fecha de Ingreso:** `{fecha_formateada}`")
     
@@ -81,7 +80,6 @@ if submit:
                 "Entrega": entrega.strftime("%d/%m/%Y")
             }])
 
-            # Leer datos actuales, pegar el nuevo y subir
             df_actual = conn.read(worksheet="Data", ttl=0)
             df_final = pd.concat([df_actual, nuevo_registro], ignore_index=True)
             conn.update(worksheet="Data", data=df_final)
@@ -89,13 +87,13 @@ if submit:
             st.success(f"✅ ¡Trabajo de {cliente} registrado!")
             st.balloons()
             
-            # Botón de WhatsApp para el recibo
+            # Botón de WhatsApp
             mensaje_wa = f"Hola {cliente.upper()}, THE WARRIOR BROTHERS confirma la recepción de tu {articulo}. Total: ${total}, Abono: ${abono}, Saldo: ${saldo}. Entrega: {entrega.strftime('%d/%m/%Y')}."
             link_wa = f"https://wa.me/593{celular}?text={mensaje_wa.replace(' ', '%20')}"
             st.link_button("📲 Enviar Recibo por WhatsApp", link_wa)
 
         except Exception as e:
-            st.error(f"Hubo un detalle al guardar, mi rey: {e}")
+            st.error(f"Hubo un detalle, mi rey: {e}")
     else:
         st.warning("⚠️ El nombre y el artículo son obligatorios.")
 

@@ -90,16 +90,15 @@ if submit:
 
             st.success(f"✅ ¡Guardado en Excel para el {f_e}!")
 
-     # --- GENERADOR DE WHATSAPP (CON EMOJI DE LOBO) ---
-            # Definimos los emojis por código para que no den error
-            # Reemplazamos el escudo por el lobo 🐺
-            e_lobo, e_check = "\U0001F43A", "\u2705"
+    # --- GENERADOR DE WHATSAPP (VERSIÓN LOBO NEGRO) ---
+            # Usamos el lobo y un diamante pequeño para máxima elegancia
+            e_lobo_negro, e_check = "\U0001F43A \U0001F532", "\u2705"
             e_llave, e_bolsa, e_billete = "\U0001F6E0", "\U0001F4B0", "\U0001F4B5"
             e_tarjeta, e_calen, e_alerta, e_chispas = "\U0001F4B3", "\U0001F4D3", "\u26A0", "\u2728"
 
-            # Creamos el mensaje final dinámico
+            # El mensaje ahora empieza con el Lobo Negro
             msg_wa = (
-                f"{e_lobo} *THE WARRIOR BROTHERS*\n" # <-- ¡Aquí está el cambio!
+                f"{e_lobo_negro} *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
                 f"¡Hola *{nombre.upper()}*! {e_check}\n"
                 f"Confirmamos la recepción de su *{articulo.lower()}*:\n\n"
@@ -115,7 +114,6 @@ if submit:
                 "- Trabajos no retirados en 2 meses serán liquidados.\n\n"
                 f"¡Gracias por su confianza! {e_chispas}"
             )
-
             # Preparación del link para WhatsApp
             import urllib.parse
             texto_url = urllib.parse.quote(msg_wa)

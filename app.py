@@ -90,18 +90,18 @@ if submit:
 
             st.success(f"✅ ¡Guardado en Excel para el {f_e}!")
 
-            # --- GENERADOR DE WHATSAPP ---
+            # --- GENERADOR DE WHATSAPP (VERSIÓN DINÁMICA SIN REPETICIÓN) ---
             # Emojis en código para evitar errores de rombos
-            e_escudo, e_check, e_maleta = "\U0001F6E1", "\u2705", "\U0001F4BC"
+            e_escudo, e_check = "\U0001F6E1", "\u2705"
             e_llave, e_bolsa, e_billete = "\U0001F6E0", "\U0001F4B0", "\U0001F4B5"
             e_tarjeta, e_calen, e_alerta, e_chispas = "\U0001F4B3", "\U0001F4D3", "\u26A0", "\u2728"
 
+            # Aquí la frase inteligente que usa el artículo directamente
             msg_wa = (
                 f"{e_escudo} *THE WARRIOR BROTHERS*\n"
                 "------------------------------------------\n"
                 f"¡Hola *{nombre.upper()}*! {e_check}\n"
-                "Confirmamos la recepción de su artículo:\n\n"
-                f"{e_maleta} *Artículo:* {articulo}\n"
+                f"Confirmamos la recepción de su *{articulo.lower()}*:\n\n"
                 f"{e_llave} *Trabajo:* {reparacion}\n"
                 "------------------------------------------\n"
                 f"{e_bolsa} *Total:* ${total:.2f}\n"
@@ -115,9 +115,12 @@ if submit:
                 f"¡Gracias por su confianza! {e_chispas}"
             )
 
+            # Preparación del link para WhatsApp
+            import urllib.parse
             texto_url = urllib.parse.quote(msg_wa)
             link_wa = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={texto_url}"
 
+            # Botón visual verde de WhatsApp
             st.markdown(f"""
                 <a href="{link_wa}" target="_blank" style="text-decoration:none;">
                     <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px; margin-top:20px;">

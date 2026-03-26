@@ -3,25 +3,39 @@ import pandas as pd
 from datetime import datetime
 import urllib.parse
 import pytz
+import sqlite3
 
-# --- CONFIGURACIÓN ---
-st.set_page_config(
-    page_title="THE WARRIOR BROTHERS",
-    page_icon="logo.png",
-    layout="wide"
-)
-
-# Configuración de zona horaria para Ecuador
+# --- 1. CONFIGURACIÓN ---
+st.set_page_config(page_title="THE WARRIOR BROTHERS PRO", page_icon="👞", layout="wide")
 zona_ec = pytz.timezone('America/Guayaquil')
-hoy_ecuador = datetime.now(zona_ec).date()
 
-# --- 1. SEGURIDAD ---
+# Inicializar Base de Datos Local
+def init_db():
+    conn = sqlite3.connect('warrior_pro.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS recibos 
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  fecha TEXT, 
+                  cliente TEXT, 
+                  celular TEXT,
+                  articulo TEXT, 
+                  reparacion TEXT, 
+                  total REAL, 
+                  abono REAL, 
+                  saldo REAL,
+                  entrega TEXT)''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# --- 2. SEGURIDAD ---
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
 
 if not st.session_state["autenticado"]:
     st.title("🔐 Acceso Privado")
-    password = st.text_input("Ingresa la contraseña:", type="password")
+    password = st.text_input("Contraseña:", type="password")
     if st.button("Entrar"):
         if password == "WARRIOR2026":
             st.session_state["autenticado"] = True
@@ -30,85 +44,85 @@ if not st.session_state["autenticado"]:
             st.error("Contraseña incorrecta.")
     st.stop()
 
-# --- 2. APLICACIÓN PRINCIPAL ---
-st.markdown(
-    """
-    <div style='display: flex; align-items: center; justify-content: center; gap: 15px;'>
-        <img src='https://raw.githubusercontent.com/youbanders590-ctrl/WarriorBrothersApp/main/logo.png' style='height: 50px;'>
-        <h1 style='margin: 0;'>THE WARRIOR BROTHERS</h1>
-    </div>
-    <h3 style='text-align: center; color: #888; margin-top: 5px;'>Especialistas en Cuero y Calzado</h3>
-    <br>
-    """,
-    unsafe_allow_html=True
-)
+# --- 3. DISEÑO DE INTERFAZ ---
+st.markdown("<h1 style='text-align: center;'>🛡️ THE WARRIOR BROTHERS</h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: #888;'>Gestión Profesional de Calzado</h3>", unsafe_allow_html=True)
 
-# Formulario de entrada
-with st.form("form_warrior", clear_on_submit=True):
-    col1, col2 = st.columns(2)
-    with col1:
-        nombre = st.text_input("👤 Cliente:")
-        celular = st.text_input("📱 WhatsApp (ej: 09...):")
-        articulo = st.text_input("💼 Tipo de Artículo (Zapato, Maleta, Chompa):")
-    with col2:
-        reparacion = st.text_input("🛠️ Reparación a realizar:")
-        total = st.number_input("💰 Total ($):", min_value=0.0)
-        abono = st.number_input("💵 Abono ($):", min_value=0.0)
-        fecha_entrega = st.date_input("📅 Fecha de entrega:", value=hoy_ecuador, min_value=hoy_ecuador)
-    
-    submit = st.form_submit_button("💾 GENERAR RECIBO")
+# Pestañas para organizar el trabajo
+tab_registro, tab_historial = st.tabs(["📝 REGISTRAR TRABAJO", "📊 CAJA Y CONTROL"])
 
-if submit:
-    if nombre and celular:
-        # --- CÁLCULOS ---
-        saldo = total - abono
-        ahora = datetime.now(zona_ec)
-        f_h = ahora.strftime("%d/%m/%Y %H:%M")
-        f_e = fecha_entrega.strftime("%d/%m/%Y")
+# --- PESTAÑA 1: REGISTRO ---
+with tab_registro:
+    with st.form("form_registro", clear_on_submit=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            nombre = st.text_input("👤 Cliente:")
+            celular = st.text_input("📱 WhatsApp:")
+            articulo = st.text_input("💼 Artículo:")
+        with col2:
+            reparacion = st.text_input("🛠️ Reparación:")
+            total = st.number_input("💰 Total ($):", min_value=0.0, format="%.2f")
+            abono = st.number_input("💵 Abono ($):", min_value=0.0, format="%.2f")
+            fecha_entrega = st.date_input("📅 Fecha de entrega:")
+            
+        submit = st.form_submit_button("💾 GUARDAR Y GENERAR")
 
-        # Mensaje Informativo de éxito local
-        st.success(f"✅ ¡Datos procesados para {nombre.upper()}!")
+    if submit:
+        if nombre and celular:
+            saldo = total - abono
+            f_registro = datetime.now(zona_ec).strftime("%d/%m/%Y %H:%M")
+            f_entrega = fecha_entrega.strftime("%d/%m/%Y")
+            
+            # Guardar en SQLite
+            conn = sqlite3.connect('warrior_pro.db')
+            c = conn.cursor()
+            c.execute("""INSERT INTO recibos (fecha, cliente, celular, articulo, reparacion, total, abono, saldo, entrega) 
+                         VALUES (?,?,?,?,?,?,?,?,?)""", 
+                      (f_registro, nombre.upper(), celular, articulo, reparacion, total, abono, saldo, f_entrega))
+            conn.commit()
+            conn.close()
+            
+            st.success(f"✅ ¡Trabajo de {nombre.upper()} registrado!")
 
-        # --- GENERADOR DE WHATSAPP ---
-        e_zapato, e_martillo = "👞", "🔨"
-        e_check = "✅"
-        e_llave, e_bolsa, e_billete = "🛠️", "💰", "💵"
-        e_tarjeta, e_calen, e_alerta, e_chispas = "💳", "📅", "⚠️", "✨"
+            # WhatsApp
+            msg = (f"👞🔨 *THE WARRIOR BROTHERS*\n"
+                   f"¡Hola *{nombre.upper()}*!\n"
+                   f"Recibimos su *{articulo}* para: {reparacion}\n"
+                   f"💰 *Total:* ${total:.2f} | *Abono:* ${abono:.2f}\n"
+                   f"💳 *Saldo:* *${saldo:.2f}*\n"
+                   f"📅 *Entrega:* {f_entrega}\n\n"
+                   f"¡Gracias por su confianza! ✨")
+            
+            link = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={urllib.parse.quote(msg)}"
+            st.markdown(f'''
+                <a href="{link}" target="_blank" style="text-decoration:none;">
+                    <div style="background-color:#25D366;color:white;padding:15px;border-radius:10px;text-align:center;font-weight:bold;font-size:18px;">
+                        📲 ENVIAR RECIBO POR WHATSAPP
+                    </div>
+                </a>
+            ''', unsafe_allow_html=True)
+        else:
+            st.error("⚠️ Falta nombre o celular.")
 
-        msg_wa = (
-            f"{e_zapato}{e_martillo} *THE WARRIOR BROTHERS*\n"
-            "------------------------------------------\n"
-            f"¡Hola *{nombre.upper()}*! {e_check}\n"
-            f"Confirmamos la recepción de su *{articulo.lower()}*:\n\n"
-            f"{e_llave} *Trabajo:* {reparacion}\n"
-            "------------------------------------------\n"
-            f"{e_bolsa} *Total:* ${total:.2f}\n"
-            f"{e_billete} *Abono:* ${abono:.2f}\n"
-            f"{e_tarjeta} *Saldo pendiente:* *${saldo:.2f}*\n"
-            "------------------------------------------\n"
-            f"{e_calen} *Entrega estimada:* {f_e}\n\n"
-            f"{e_alerta} *NOTA IMPORTANTE:*\n"
-            "- Una vez ingresada la obra, no se realizarán devoluciones.\n"
-            "- Trabajos no retirados en 2 meses serán liquidados.\n\n"
-            f"¡Gracias por su confianza! {e_chispas}"
-        )
+# --- PESTAÑA 2: HISTORIAL Y MÉTRICAS ---
+with tab_historial:
+    conn = sqlite3.connect('warrior_pro.db')
+    df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
+    conn.close()
 
-        # Preparación del link para WhatsApp
-        texto_url = urllib.parse.quote(msg_wa)
-        # Limpiamos el número por si ingresan el 0 inicial
-        num_limpio = celular.lstrip('0')
-        link_wa = f"https://api.whatsapp.com/send?phone=593{num_limpio}&text={texto_url}"
-
-        # Botón visual verde de WhatsApp
-        st.markdown(f"""
-            <a href="{link_wa}" target="_blank" style="text-decoration:none;">
-                <div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px; margin-top:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    📲 ENVIAR RECIBO POR WHATSAPP
-                </div>
-            </a>
-        """, unsafe_allow_html=True)
-
+    if not df.empty:
+        # Métricas de dinero
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Ingreso Total (Trabajos)", f"${df['total'].sum():.2f}")
+        m2.metric("Dinero en Caja (Abonos)", f"${df['abono'].sum():.2f}", delta="Efectivo real")
+        m3.metric("Por Cobrar (Saldos)", f"${df['saldo'].sum():.2f}", delta_color="inverse")
+        
+        st.divider()
+        st.subheader("🗂️ Registro Completo")
+        st.dataframe(df, use_container_width=True)
+        
+        # Botón para descargar por si quieres tenerlo en Excel
+        csv = df.to_csv(index=False).encode('utf-8')
+        st.download_button("📥 Descargar reporte para Excel", csv, "reporte_warrior.csv", "text/csv")
     else:
-        st.error("⚠️ Por favor completa el nombre y el celular.")
-
-st.markdown("<br><center style='color: #888;'>© 2026 The Warrior Brothers | Loja, Ecuador 🛡️⚒️</center>", unsafe_allow_html=True)
+        st.info("No hay registros todavía.")

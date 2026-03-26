@@ -1,74 +1,96 @@
 import streamlit as st
 import base64
 
-# 1. Configuración inicial
-st.set_page_config(page_title="The Warrior Brothers", layout="wide")
+# --- CONFIGURACIÓN DE PÁGINA ---
+st.set_page_config(
+    page_title="The Warrior Brothers | Maestros en Reparación",
+    page_icon="👞",
+    layout="wide",
+)
 
-# 2. Función para convertir tu logo.png en código que la web entienda
-def cargar_logo(archivo):
+# --- CARGA DEL LOGO (EL QUE YA FUNCIONA) ---
+def get_base64_image(image_path):
     try:
-        with open(archivo, "rb") as f:
-            data = base64.b64encode(f.read()).decode()
-            return f'data:image/png;base64,{data}'
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
     except:
         return None
 
-logo_data = cargar_logo("logo.png")
+logo_base64 = get_base64_image("logo.png")
+logo_html = f'<img src="data:image/png;base64,{logo_base64}" style="width:80px; margin-right:20px;">' if logo_base64 else ""
 
-# 3. Estilos (CSS) - Aquí definimos que el logo vaya al lado del texto
+# --- ESTILOS CSS ---
 st.markdown("""
     <style>
-    .hero-container {
-        background-color: #1e1e1e;
-        padding: 80px;
-        border-radius: 20px;
-        text-align: center;
-        color: white;
+    .stApp { background-color: #fcfdfa; color: #1e1e1e; }
+    .hero-black {
+        background-color: #1e1e1e; color: white; padding: 60px; 
+        border-radius: 20px; text-align: center; margin-bottom: 40px;
     }
-    .flex-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-        margin-bottom: 20px;
+    .flex-header { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .whatsapp-btn {
+        background-color: #25D366; color: white !important; padding: 15px 30px; 
+        text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;
     }
-    .logo-img { width: 90px; height: auto; }
-    .main-title { font-size: 3.5rem; font-weight: 900; margin: 0; color: white; }
-    .btn-wa {
-        background-color: #25D366;
-        color: white !important;
-        padding: 15px 30px;
-        text-decoration: none;
-        border-radius: 50px;
-        font-weight: bold;
-        display: inline-block;
-        margin-top: 30px;
+    .service-card {
+        background-color: white; border-radius: 15px; padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; height: 100%;
+        border: 1px solid #eee;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 4. Construcción del diseño (HTML)
-# Si el logo existe, lo ponemos; si no, solo el texto
-logo_html = f'<img src="{logo_data}" class="logo-img">' if logo_data else ""
-
-html_final = f"""
-<div class="hero-container">
-    <div class="flex-header">
-        {logo_html}
-        <h1 class="main-title">THE WARRIOR BROTHERS</h1>
+# --- 1. ENCABEZADO (HERO) ---
+st.markdown(f"""
+    <div class="hero-black">
+        <div class="flex-header">
+            {logo_html}
+            <h1 style="color: white; font-size: 3.5rem; font-weight: 900; margin: 0;">THE WARRIOR BROTHERS</h1>
+        </div>
+        <p style="font-size: 1.5rem; color: #ccc;">Maestría en Restauración de Calzado y Cuero</p>
+        <p>Artesanía lojana con precisión digital.</p>
+        <br>
+        <a href="https://wa.me/593994718745" class="whatsapp-btn">Cotizar mi Trabajo Ahora</a>
     </div>
-    <p style="font-size: 1.5rem; color: #ccc;">Maestría en Restauración de Calzado y Cuero</p>
-    <p>Artesanía lojana con precisión digital.</p>
-    <a href="https://wa.me/593994718745" class="btn-wa">Cotizar mi Trabajo Ahora</a>
-</div>
-"""
+    """, unsafe_allow_html=True)
 
-# CRUCIAL: El permiso 'unsafe_allow_html=True' debe ir aquí
-st.markdown(html_final, unsafe_allow_html=True)
+# --- 2. SERVICIOS (RECUPERADOS) ---
+st.header("🛠️ Nuestras Especialidades")
+col1, col2, col3, col4 = st.columns(4)
 
-# 5. Resto de la página (Servicios simples para probar)
-st.write("---")
-col1, col2, col3 = st.columns(3)
-with col1: st.subheader("👞 Suelas")
-with col2: st.subheader("🎨 Tinturado")
-with col3: st.subheader("👠 Tacos")
+servicios = [
+    ["Suelas y Pisos", "👞 Cambio de suelas de caucho y cuero."],
+    ["Tinturado Pro", "🎨 Restauración total de color."],
+    ["Tacos y Tapas", "👠 Arreglo preciso para damas."],
+    ["Accesorios", "🎒 Reparación de maletas y costuras."]
+]
+
+for col, ser in zip([col1, col2, col3, col4], servicios):
+    with col:
+        st.markdown(f"""<div class="service-card"><h4>{ser[0]}</h4><p>{ser[1]}</p></div>""", unsafe_allow_html=True)
+
+# --- 3. SERVICIO A DOMICILIO ---
+st.write("")
+st.markdown("""
+    <div style="background-color: #f1f1f1; padding: 40px; border-radius: 20px; text-align: center; border: 2px dashed #1e1e1e;">
+        <h3>🚀 Servicio a Domicilio en Loja</h3>
+        <p>Recogemos y entregamos tus zapatos por <b>+$5.00</b> adicionales.</p>
+        <a href="https://wa.me/593994718745?text=Deseo%20servicio%20a%20domicilio" class="whatsapp-btn" style="background-color: #1e1e1e;">Solicitar Retiro</a>
+    </div>
+    """, unsafe_allow_html=True)
+
+# --- 4. UBICACIÓN Y CONTACTO ---
+st.write("")
+st.header("📍 Encuéntranos")
+c1, c2 = st.columns(2)
+
+with c1:
+    st.subheader("Información de Contacto")
+    st.write("**Dirección:** Centro de la ciudad, Loja, Ecuador")
+    st.write("**WhatsApp:** [0994718745](https://wa.me/593994718745)")
+    st.write("**Horario:** Lun - Vie (08:00 - 18:00) | Sáb (09:00 - 13:00)")
+
+with c2:
+    st.info("🗺️ **Mapa de Loja**\n\nPróximamente integraremos el mapa interactivo aquí.")
+
+st.markdown("<br><hr><center>© 2026 The Warrior Brothers. Orgullosamente Lojanos. 🛡️⚒️</center>", unsafe_allow_html=True)

@@ -28,7 +28,7 @@ st.markdown("""
     .flex-header { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
     .logo-img { width: 100px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1)); }
     .main-title { 
-        font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 8vw, 4.2rem); 
+        font-family: 'Montserrat', sans-serif; font-size: clamp(2.5rem, 8vw, 4.5rem); 
         margin: 0; background: linear-gradient(90deg, #FFFFFF 30%, #FFD700 100%);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         font-weight: 900; line-height: 1.1;
@@ -58,10 +58,14 @@ st.markdown("""
     }
     .tiktok { background: #000000; border: 1px solid #fe2c55; }
     .facebook { background: #1877F2; }
+    
+    /* Estilo para la lista de horarios */
+    .schedule-list { list-style: none; padding: 0; margin-top: 10px; }
+    .schedule-list li { margin-bottom: 5px; font-family: 'Roboto', sans-serif; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. SECCIÓN PRINCIPAL (HERO) ---
+# --- 4. SECCIÓN HERO ---
 st.markdown(f"""
     <div class="hero-container">
         <div class="flex-header">
@@ -88,7 +92,7 @@ for col, ser in zip([c1, c2, c3, c4], servicios):
 
 st.write("<br>", unsafe_allow_html=True)
 
-# --- 6. SECCIÓN CONTACTO Y MAPA ---
+# --- 6. SECCIÓN CONTACTO Y UBICACIÓN ---
 col_info, col_mapa = st.columns([1, 1.2])
 
 with col_info:
@@ -102,20 +106,25 @@ with col_info:
             <h3>📍 Ubicación y Horarios</h3>
             <p><b>Dirección:</b> Lauro Guerrero y José A. Eguiguren, Loja, Ecuador</p>
             <p><b>WhatsApp:</b> 099 471 8745</p>
-            <p><b>Horario:</b> Lun - Vie (08:00 - 18:00)</p>
+            <p><b>Horario de atención:</b></p>
+            <ul class="schedule-list">
+                <li><b>Lun - Vie:</b> 08:00 - 19:00</li>
+                <li><b>Sáb:</b> 08:00 - 15:30</li>
+            </ul>
         </div>
     """, unsafe_allow_html=True)
 
 with col_mapa:
     st.markdown("<h3 style='color: #1a1a1a; font-family: Montserrat; margin-left: 5px;'>Visítanos en nuestro Taller</h3>", unsafe_allow_html=True)
     
-    # Hemos usado https y ajustado el tamaño para evitar que salga en blanco
+    # Mapa con tu ubicación exacta y protocolo seguro https
     mapa_html = """
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4639.308515158177!2d-79.2085081932307!3d-3.996496214635539!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb491f5912b73b%3A0xa1e733db367e07a6!2sThe%20Warrior%20Brothers!5e1!3m2!1ses!2sec!4v1774539966491!5m2!1ses!2sec1" 
-    width="100%" height="400" style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
-    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3980.089423533804!2d-79.2045654!3d-3.9981444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb49e018d96071%3A0xc3f6089d813735f!2sThe%20Warrior%20Brothers!5e0!3m2!1ses!2sec!4v1711468800000!5m2!1ses!2sec" 
+        width="100%" height="400" style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
     """
-    # El height de components.html (450) es mayor al del iframe (400) para asegurar la carga
     components.html(mapa_html, height=450)
 
 st.markdown("<br><center style='color: #666;'>© 2026 The Warrior Brothers | Loja, Ecuador 🛡️⚒️</center><br>", unsafe_allow_html=True)

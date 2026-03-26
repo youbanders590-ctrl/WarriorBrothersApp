@@ -59,7 +59,6 @@ st.markdown("""
     .tiktok { background: #000000; border: 1px solid #fe2c55; }
     .facebook { background: #1877F2; }
     
-    /* Estilo para la lista de horarios */
     .schedule-list { list-style: none; padding: 0; margin-top: 10px; }
     .schedule-list li { margin-bottom: 5px; font-family: 'Roboto', sans-serif; }
     </style>
@@ -117,12 +116,16 @@ with col_info:
 with col_mapa:
     st.markdown("<h3 style='color: #1a1a1a; font-family: Montserrat; margin-left: 5px;'>Visítanos en nuestro Taller</h3>", unsafe_allow_html=True)
     
-    # Mapa con tu ubicación exacta y protocolo seguro https
+    # Hemos configurado el mapa para que busque exactamente "The Warrior Brothers Loja"
+    # Esto fuerza a Google a poner el marcador (globo rojo) sobre tu negocio.
     mapa_html = """
     <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3980.089423533804!2d-79.2045654!3d-3.9981444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb49e018d96071%3A0xc3f6089d813735f!2sThe%20Warrior%20Brothers!5e0!3m2!1ses!2sec!4v1711468800000!5m2!1ses!2sec" 
-        width="100%" height="400" style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
-        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        width="100%" 
+        height="400" 
+        style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
+        loading="lazy" 
+        allowfullscreen 
+        src="https://maps.google.com/maps?q=The%20Warrior%20Brothers%20Loja%20Lauro%20Guerrero&t=&z=17&ie=UTF8&iwloc=&output=embed">
     </iframe>
     """
     components.html(mapa_html, height=450)

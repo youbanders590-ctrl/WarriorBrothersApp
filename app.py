@@ -26,15 +26,13 @@ init_db()
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
 
-if not st.session_state["autenticado"]:
+if not st.session_state["autenticado"] or "autenticado" not in st.session_state:
     st.title("🔐 Acceso Privado")
     password = st.text_input("Contraseña:", type="password")
     if st.button("Entrar"):
         if password == "WARRIOR2026":
             st.session_state["autenticado"] = True
             st.rerun()
-        else:
-            st.error("Contraseña incorrecta.")
     st.stop()
 
 # --- 3. DISEÑO ---
@@ -42,7 +40,7 @@ st.markdown("<h1 style='text-align: center;'>🛡️ THE WARRIOR BROTHERS</h1>",
 
 tab_registro, tab_historial = st.tabs(["📝 REGISTRAR TRABAJO", "📊 CAJA Y CONTROL"])
 
-# --- PESTAÑA 1: REGISTRO ---
+# --- PESTAÑA 1: REGISTRO (Sin cambios) ---
 with tab_registro:
     with st.form("form_registro", clear_on_submit=True):
         col1, col2 = st.columns(2)
@@ -72,19 +70,16 @@ with tab_registro:
             conn.commit()
             conn.close()
             st.success(f"✅ ¡Trabajo de {nombre.upper()} registrado!")
-            
-            msg = f"👞🔨 *THE WARRIOR BROTHERS*\n¡Hola {nombre.upper()}!\nSaldo: ${saldo:.2f}\nEntrega: {f_entrega}"
-            link = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={urllib.parse.quote(msg)}"
-            st.markdown(f'<a href="{link}" target="_blank" style="text-decoration:none;"><div style="background-color:#25D366;color:white;padding:15px;border-radius:10px;text-align:center;font-weight:bold;">📲 ENVIAR POR WHATSAPP</div></a>', unsafe_allow_html=True)
+            st.rerun()
 
-# --- PESTAÑA 2: HISTORIAL INTERACTIVO ---
+# --- PESTAÑA 2: HISTORIAL CON SELECCIÓN VISUAL ---
 with tab_historial:
     conn = sqlite3.connect('warrior_pro.db')
     df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
     conn.close()
 
     if not df.empty:
-        # Métricas principales
+        # Métricas
         m1, m2, m3 = st.columns(3)
         m1.metric("Ingreso Total", f"${df['total'].sum():.2f}")
         m2.metric("Caja (Abonos)", f"${df['abono'].sum():.2f}")
@@ -92,34 +87,40 @@ with tab_historial:
         
         st.divider()
         st.subheader("🗂️ Registro de Trabajos")
-        st.info("💡 Para borrar: Haz clic en el cuadrito a la izquierda de la fila y presiona la tecla 'Suprimir' (Delete) o usa el icono de basura que aparecerá.")
-        
-        # EL EDITOR DE DATOS (Aquí sucede la magia de la X para borrar)
-        # Permite borrar filas de forma nativa
+
+        # 1. Creamos una columna temporal de Checkbox en la tabla
+        df.insert(0, "Seleccionar", False)
+
+        # 2. Usamos el editor de datos para que el usuario marque los que quiere borrar
         df_editado = st.data_editor(
-            df, 
-            use_container_width=True, 
-            hide_index=True, 
-            num_rows="dynamic", # Esto habilita el borrado y añadido de filas
-            key="tabla_editor"
+            df,
+            hide_index=True,
+            use_container_width=True,
+            column_config={
+                "Seleccionar": st.column_config.CheckboxColumn(
+                    "❌ Borrar",
+                    help="Marca para eliminar",
+                    default=False,
+                )
+            },
+            disabled=["id", "fecha", "cliente", "celular", "articulo", "reparacion", "total", "abono", "saldo", "entrega"]
         )
+
+        # 3. Botón para ejecutar el borrado de los seleccionados
+        filas_seleccionadas = df_editado[df_editado["Seleccionar"] == True]
         
-        # Si el usuario borró algo en la tabla visual, actualizamos la Base de Datos
-        if len(df_editado) < len(df):
-            # Encontramos qué IDs ya no están en el DataFrame editado
-            ids_actuales = df_editado['id'].tolist()
-            ids_originales = df['id'].tolist()
-            ids_a_eliminar = [i for i in ids_originales if i not in ids_actuales]
-            
-            if ids_a_eliminar:
+        if not filas_seleccionadas.empty:
+            if st.button(f"🗑️ ELIMINAR {len(filas_seleccionadas)} REGISTRO(S) SELECCIONADO(S)", type="primary"):
+                ids_a_borrar = filas_seleccionadas["id"].tolist()
+                
                 conn = sqlite3.connect('warrior_pro.db')
                 c = conn.cursor()
-                for id_borrar in ids_a_eliminar:
-                    c.execute("DELETE FROM recibos WHERE id=?", (id_borrar,))
+                for id_b in ids_a_borrar:
+                    c.execute("DELETE FROM recibos WHERE id=?", (id_b,))
                 conn.commit()
                 conn.close()
-                st.success("✅ Registro eliminado correctamente.")
+                
+                st.success("Registros eliminados.")
                 st.rerun()
-
     else:
         st.info("No hay registros todavía.")

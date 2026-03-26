@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# --- FUNCIÓN MAESTRA PARA CARGAR EL LOGO LOCAL ---
+# --- FUNCIÓN MAESTRA PARA CARGAR EL LOGO LOCAL (ANTI-DAÑOS) ---
 # Esto convierte tu logo.png en un código que el HTML entiende
 def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
@@ -23,7 +23,7 @@ except FileNotFoundError:
     # Si el archivo no está, ponemos un emoji para no romper el diseño
     logo_html = '<span style="font-size: 80px; margin-right: 20px;">🐺</span>'
 
-# --- ESTILOS CSS PERSONALIZADOS ---
+# --- ESTILOS CSS PERSONALIZADOS (Activados) ---
 st.markdown("""
     <style>
     /* Fondo y texto general */
@@ -60,7 +60,8 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 1. SECCIÓN HÉROE (CON EL LOGO CORREGIDO) ---
+# --- 1. SECCIÓN HÉROE (CON EL FIX DEFINITIVO) ---
+# He añadido 'unsafe_allow_html=True' al final de esta sección para que no salga el texto
 st.markdown(f"""
     <div class="hero-black">
         

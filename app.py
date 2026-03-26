@@ -43,14 +43,14 @@ tab_reg, tab_hist = st.tabs(["📝 REGISTRAR", "📊 HISTORIAL"])
 # --- PESTAÑA 1: REGISTRO ---
 with tab_reg:
     with st.form("f_reg", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        nombre = c1.text_input("👤 Cliente:")
-        celular = c1.text_input("📱 WhatsApp:")
-        articulo = c1.text_input("💼 Artículo:")
-        reparacion = c2.text_input("🛠️ Reparación:")
-        total = c2.number_input("💰 Total $", min_value=0.0)
-        abono = c2.number_input("💵 Abono $", min_value=0.0)
-        f_ent = c2.date_input("📅 Entrega:")
+        col1, col2 = st.columns(2)
+        nombre = col1.text_input("👤 Cliente:")
+        celular = col1.text_input("📱 WhatsApp:")
+        articulo = col1.text_input("💼 Artículo:")
+        reparacion = col2.text_input("🛠️ Reparación:")
+        total = col2.number_input("💰 Total $", min_value=0.0)
+        abono = col2.number_input("💵 Abono $", min_value=0.0)
+        f_ent = col2.date_input("📅 Entrega:")
         if st.form_submit_button("💾 GUARDAR"):
             if nombre and celular:
                 saldo = total - abono
@@ -63,40 +63,53 @@ with tab_reg:
                 conn.close()
                 st.rerun()
 
-# --- PESTAÑA 2: HISTORIAL CON LA X ROJA ---
+# --- PESTAÑA 2: HISTORIAL CON EXCEL ---
 with tab_hist:
     conn = sqlite3.connect('warrior_pro.db')
     df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
     conn.close()
 
     if not df.empty:
-        # Columna de selección minimalista
+        # Fila de botones arriba de la tabla
+        col_btn1, col_btn2 = st.columns([1, 5])
+        
+        # Lógica de borrado (la X minimalista)
         df.insert(0, "X", False)
-
-        # Editor de datos con la columna X pequeña
         df_ed = st.data_editor(
             df,
             hide_index=True,
             use_container_width=True,
-            column_config={
-                "X": st.column_config.CheckboxColumn("❌", default=False),
-                "id": None # Ocultamos el ID
-            },
+            column_config={"X": st.column_config.CheckboxColumn("❌", default=False), "id": None},
             disabled=[col for col in df.columns if col != "X"]
         )
 
-        # Botón de borrado minimalista: solo una X roja
         selec = df_ed[df_ed["X"] == True]
-        if not selec.empty:
-            # Botón estilizado como una X roja
-            if st.button("❌", help="Confirmar eliminación de filas seleccionadas", type="primary"):
-                ids = selec["id"].tolist()
-                conn = sqlite3.connect('warrior_pro.db')
-                c = conn.cursor()
-                for i in ids:
-                    c.execute("DELETE FROM recibos WHERE id=?", (i,))
-                conn.commit()
-                conn.close()
-                st.rerun()
+        with col_btn1:
+            if not selec.empty:
+                if st.button("❌", type="primary"):
+                    ids = selec["id"].tolist()
+                    conn = sqlite3.connect('warrior_pro.db')
+                    c = conn.cursor()
+                    for i in ids:
+                        c.execute("DELETE FROM recibos WHERE id=?", (i,))
+                    conn.commit()
+                    conn.close()
+                    st.rerun()
+
+        # --- BOTÓN PARA EXCEL ---
+        st.divider()
+        st.subheader("📥 Exportar Datos")
+        
+        # Preparamos el archivo para descargar (sin la columna de la X)
+        df_excel = df.drop(columns=["X"]) 
+        csv_data = df_excel.to_csv(index=False, encoding='utf-8-sig').encode('utf-8-sig')
+        
+        st.download_button(
+            label="📊 DESCARGAR REPORTE PARA EXCEL",
+            data=csv_data,
+            file_name=f"Reporte_Warrior_{datetime.now().strftime('%d_%m_%Y')}.csv",
+            mime="text/csv",
+            help="Haz clic para bajar todos tus registros y abrirlos en Excel"
+        )
     else:
         st.info("Sin registros.")

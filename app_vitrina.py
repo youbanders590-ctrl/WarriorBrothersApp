@@ -47,7 +47,7 @@ st.markdown(f"""
             {logo_html}
             <h1 style="color: white; font-size: 3.5rem; font-weight: 900; margin: 0;">THE WARRIOR BROTHERS</h1>
         </div>
-        <p style="font-size: 1.5rem; color: #ccc;">Maestría en Restauración de Calzado y Cuero</p>
+        <p style="font-size: 1.5rem; color: #ccc;">Especialistas en Restauración de Calzado y Cuero</p>
         <p>Artesanía lojana con precisión digital.</p>
         <br>
         <a href="https://wa.me/593994718745" class="whatsapp-btn">Cotizar mi Trabajo Ahora</a>
@@ -88,7 +88,7 @@ with c1:
     st.subheader("Información de Contacto")
     st.write("**Dirección:** Centro de la ciudad, Loja, Ecuador")
     st.write("**WhatsApp:** [0994718745](https://wa.me/593994718745)")
-    st.write("**Horario:** Lun - Vie (08:00 - 18:00) | Sáb (09:00 - 13:00)")
+    st.write("**Horario:** Lun - Vie (08:00 - 19:00) | Sáb (08:00 - 15:30)")
 
 with c2:
     st.info("🗺️ **Mapa de Loja**\n\nPróximamente integraremos el mapa interactivo aquí.")

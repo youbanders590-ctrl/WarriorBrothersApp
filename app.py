@@ -40,7 +40,7 @@ st.markdown("<h1 style='text-align: center;'>🛡️ THE WARRIOR BROTHERS</h1>",
 
 tab_reg, tab_hist = st.tabs(["📝 REGISTRAR", "📊 HISTORIAL"])
 
-# --- REGISTRO ---
+# --- PESTAÑA 1: REGISTRO (Sin cambios) ---
 with tab_reg:
     with st.form("f_reg", clear_on_submit=True):
         c1, c2 = st.columns(2)
@@ -64,41 +64,56 @@ with tab_reg:
                 st.success("¡Registrado!")
                 st.rerun()
 
-# --- HISTORIAL CON "BOTÓN" DE BORRADO ---
+# --- PESTAÑA 2: HISTORIAL CON LA X PARA BORRAR ---
 with tab_hist:
     conn = sqlite3.connect('warrior_pro.db')
     df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
     conn.close()
 
     if not df.empty:
-        # Añadimos la columna de la "X" al inicio
-        df.insert(0, "X", False)
-
-        st.subheader("Selecciona la X y presiona el botón para borrar:")
+        st.subheader("Para borrar, haz clic directamente en la X roja:")
         
-        # Configuración de la tabla para que la X se vea como un botón de acción
+        # 1. Añadimos la columna de la X al principio con valores vacíos
+        df.insert(0, "X", "")
+
+        # 2. Usamos el editor de datos para detectar el clic en la X
+        # Configuramos la columna 'X' para que la celda se vea y actúe como un "botón"
         df_editado = st.data_editor(
             df,
             hide_index=True,
             use_container_width=True,
             column_config={
-                "X": st.column_config.CheckboxColumn("❌", help="Clic para borrar fila", default=False),
-                "id": None # Escondemos el ID para que se vea más limpio
+                "X": st.column_config.TextColumn(
+                    "❌",
+                    help="Clic para borrar fila instantáneamente",
+                    width="small",
+                    # Truco visual: solo se puede 'editar' esta columna
+                ),
+                "id": None # Escondemos el ID para que se vea más profesional
             },
+            # Deshabilitamos la edición de todas las columnas EXCEPTO 'X'
             disabled=[col for col in df.columns if col != "X"]
         )
 
-        # Si hay filas marcadas con X, mostramos el botón de confirmación
-        filas_borrar = df_editado[df_editado["X"] == True]
-        if not filas_borrar.empty:
-            if st.button(f"🗑️ BORRAR {len(filas_borrar)} FILA(S)", type="primary"):
-                ids_borrar = filas_borrar["id"].tolist()
+        # 3. Lógica para detectar el clic
+        # Al "editar" la celda vacía de 'X', streamlit detecta el cambio
+        if df_editado["X"].any():
+            # Buscamos la fila donde el usuario escribió/hizo clic en 'X'
+            fila_cambiada = df_editado[df_editado["X"] != ""]
+            
+            if not fila_cambiada.empty:
+                id_a_borrar = fila_cambiada.iloc[0]["id"]
+                nombre_cliente = fila_cambiada.iloc[0]["cliente"]
+                
+                # Ejecutamos el borrado en la Base de Datos
                 conn = sqlite3.connect('warrior_pro.db')
                 c = conn.cursor()
-                for i in ids_borrar:
-                    c.execute("DELETE FROM recibos WHERE id=?", (i,))
+                c.execute("DELETE FROM recibos WHERE id=?", (id_a_borrar,))
                 conn.commit()
                 conn.close()
+                
+                st.success(f"✅ Fila de {nombre_cliente} eliminada correctamente.")
+                # Recargamos para actualizar la tabla visual
                 st.rerun()
     else:
-        st.info("No hay registros.")
+        st.info("No hay registros todavía.")

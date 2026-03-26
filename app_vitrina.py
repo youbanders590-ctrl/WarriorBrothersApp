@@ -17,21 +17,21 @@ logo_html = f'<img src="data:image/png;base64,{logo_base_64}" class="logo-img">'
 # --- MEJORAS GRÁFICAS (CSS) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@300;400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@300;400;700&display=swap');
 
-    /* Fondo general con un ligero degradado */
+    /* Fondo general */
     .stApp { 
-        background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%); 
+        background-color: #f4f4f4; 
     }
 
-    /* Contenedor Negro Principal (Efecto Elevado) */
+    /* Contenedor Negro Principal */
     .hero-container {
         background: #121212;
-        padding: 80px 40px;
+        padding: 90px 40px;
         border-radius: 30px;
         text-align: center;
         color: white;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         border: 1px solid #333;
         margin-bottom: 50px;
     }
@@ -41,52 +41,82 @@ st.markdown("""
         align-items: center; 
         justify-content: center; 
         gap: 25px; 
+        flex-wrap: wrap;
     }
 
-    .logo-img { width: 100px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+    .logo-img { width: 110px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); }
 
-    /* Tipografía Premium */
+    /* TÍTULO CON DIFUMINADO AMARILLO (SOLICITADO) */
     .main-title { 
         font-family: 'Montserrat', sans-serif; 
-        font-size: 4rem; 
+        font-size: 4.5rem; 
         letter-spacing: -2px; 
         margin: 0; 
-        background: linear-gradient(90deg, #ffffff, #a8a8a8);
+        /* Degradado de Blanco a Amarillo Dorado */
+        background: linear-gradient(90deg, #FFFFFF 30%, #FFD700 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        font-weight: 900;
+        line-height: 1.1;
     }
 
-    /* Botón WhatsApp con Animación de Pulso */
+    /* Subtítulo */
+    .sub-title {
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.6rem;
+        color: #FFD700; /* Amarillo para resaltar */
+        font-weight: 400;
+        margin-top: 15px;
+        letter-spacing: 2px;
+    }
+
+    /* Botón WhatsApp */
     .btn-wa {
         background: linear-gradient(45deg, #25D366, #128C7E);
         color: white !important;
-        padding: 18px 45px;
+        padding: 20px 50px;
         text-decoration: none;
-        border-radius: 15px;
+        border-radius: 50px;
         font-family: 'Montserrat', sans-serif;
         font-weight: 700;
         display: inline-block;
-        transition: 0.3s;
-        box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+        transition: 0.4s;
+        box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+        margin-top: 30px;
+        text-transform: uppercase;
     }
     .btn-wa:hover {
-        transform: scale(1.05);
-        box-shadow: 0 15px 30px rgba(37, 211, 102, 0.5);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(37, 211, 102, 0.6);
     }
 
-    /* Tarjetas de Servicio Estilo Apple */
+    /* Tarjetas de Servicio - MEJORADA VISIBILIDAD */
     .service-card {
         background: white;
         border-radius: 20px;
-        padding: 30px;
+        padding: 35px 25px;
         text-align: center;
-        border: 1px solid rgba(0,0,0,0.05);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        transition: 0.3s;
+        border: 2px solid #eeeeee;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        transition: 0.3s ease-in-out;
+        height: 100%;
     }
     .service-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        border-color: #FFD700;
+        box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+    }
+    .service-card h3 {
+        font-family: 'Montserrat', sans-serif;
+        color: #121212;
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+    .service-card p {
+        font-family: 'Roboto', sans-serif;
+        color: #444; /* Gris oscuro para lectura fácil */
+        font-size: 1.1rem;
+        line-height: 1.4;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -98,23 +128,32 @@ st.markdown(f"""
             {logo_html}
             <h1 class="main-title">THE WARRIOR BROTHERS</h1>
         </div>
-        <p style="font-family: 'Roboto', sans-serif; font-size: 1.4rem; color: #a8a8a8; font-weight: 300; margin-top: 15px;">
-            MAESTRÍA EN RESTAURACIÓN DE CALZADO Y CUERO
+        <p class="sub-title">MAESTRÍA EN RESTAURACIÓN DE CALZADO Y CUERO</p>
+        <p style="font-family: 'Roboto', sans-serif; font-size: 1.2rem; color: #a8a8a8; margin-top: 10px;">
+            Artesanía Lojana con Precisión Digital
         </p>
-        <br><br>
-        <a href="https://wa.me/593994718745" class="btn-wa">COTIZAR TRABAJO</a>
+        <a href="https://wa.me/593994718745" class="btn-wa">Cotizar mi Trabajo</a>
     </div>
     """, unsafe_allow_html=True)
 
 # --- SERVICIOS ---
+st.markdown("<h2 style='text-align: center; font-family: Montserrat; margin-bottom: 40px;'>Nuestras Especialidades</h2>", unsafe_allow_html=True)
+
 col1, col2, col3, col4 = st.columns(4)
 servicios = [
-    ["👞 Suelas", "Cambio de suelas de alta montaña y ciudad."],
-    ["🎨 Tinturado", "Restauración de color con pigmentos europeos."],
-    ["👠 Tacos", "Reparación estructural para calzado fino."],
-    ["🎒 Cuero", "Costura y restauración de bolsos y chaquetas."]
+    ["👞 Suelas", "Cambio de suelas de alta montaña y ciudad con pegado industrial."],
+    ["🎨 Tinturado", "Restauración de color total con pigmentos de alta gama."],
+    ["👠 Tacos", "Reparación estructural y tapas para calzado formal."],
+    ["🎒 Cuero", "Mantenimiento y costura de bolsos, chaquetas y accesorios."]
 ]
 
 for col, ser in zip([col1, col2, col3, col4], servicios):
     with col:
-        st.markdown(f"""<div class="service-card"><h3>{ser[0]}</h3><p>{ser[1]}</p></div>""", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="service-card">
+                <h3>{ser[0]}</h3>
+                <p>{ser[1]}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+st.markdown("<br><br><center style='color: #888;'>© 2026 The Warrior Brothers | Loja, Ecuador</center>", unsafe_allow_html=True)

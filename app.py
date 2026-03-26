@@ -9,7 +9,6 @@ import sqlite3
 st.set_page_config(page_title="THE WARRIOR BROTHERS PRO", page_icon="👞", layout="wide")
 zona_ec = pytz.timezone('America/Guayaquil')
 
-# Inicializar Base de Datos Local
 def init_db():
     conn = sqlite3.connect('warrior_pro.db')
     c = conn.cursor()
@@ -38,7 +37,7 @@ if not st.session_state["autenticado"]:
             st.error("Contraseña incorrecta.")
     st.stop()
 
-# --- 3. DISEÑO DE INTERFAZ ---
+# --- 3. DISEÑO ---
 st.markdown("<h1 style='text-align: center;'>🛡️ THE WARRIOR BROTHERS</h1>", unsafe_allow_html=True)
 
 tab_registro, tab_historial = st.tabs(["📝 REGISTRAR TRABAJO", "📊 CAJA Y CONTROL"])
@@ -72,14 +71,10 @@ with tab_registro:
                       (f_registro, nombre.upper(), celular, articulo, reparacion, total, abono, saldo, f_entrega))
             conn.commit()
             conn.close()
-            
             st.success(f"✅ ¡Trabajo de {nombre.upper()} registrado!")
-            
-            msg = f"👞🔨 *THE WARRIOR BROTHERS*\n¡Hola {nombre.upper()}!\nSaldo: ${saldo:.2f}\nEntrega: {f_entrega}"
-            link = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={urllib.parse.quote(msg)}"
-            st.markdown(f'<a href="{link}" target="_blank" style="text-decoration:none;"><div style="background-color:#25D366;color:white;padding:15px;border-radius:10px;text-align:center;font-weight:bold;">📲 ENVIAR POR WHATSAPP</div></a>', unsafe_allow_html=True)
+            st.rerun() # Para actualizar la tabla de la otra pestaña de inmediato
 
-# --- PESTAÑA 2: HISTORIAL Y BORRADO ---
+# --- PESTAÑA 2: HISTORIAL Y BORRADO POR FILA ---
 with tab_historial:
     conn = sqlite3.connect('warrior_pro.db')
     df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
@@ -93,23 +88,29 @@ with tab_historial:
         m3.metric("Por Cobrar", f"${df['saldo'].sum():.2f}")
         
         st.divider()
-        st.dataframe(df, use_container_width=True)
+        st.subheader("🗂️ Registro de Trabajos")
+        # Mostramos la tabla. El ID es la primera columna.
+        st.dataframe(df, use_container_width=True, hide_index=True)
         
-        # --- SECCIÓN DE LIMPIEZA PARA PRUEBAS ---
-        st.sidebar.divider()
-        st.sidebar.warning("⚙️ ZONA DE MANTENIMIENTO")
-        confirmar_borrado = st.sidebar.checkbox("Confirmar que quiero borrar todo")
+        # --- SECCIÓN PARA BORRAR FILA ESPECÍFICA ---
+        st.sidebar.title("🗑️ Eliminar Registro")
+        id_a_borrar = st.sidebar.number_input("ID de la fila a borrar:", min_value=1, step=1)
         
-        if st.sidebar.button("🗑️ BORRAR TODA LA BASE DE DATOS"):
-            if confirmar_borrado:
-                conn = sqlite3.connect('warrior_pro.db')
-                c = conn.cursor()
-                c.execute("DELETE FROM recibos") # Esto vacía la tabla
+        if st.sidebar.button("Eliminar Fila # " + str(id_a_borrar)):
+            conn = sqlite3.connect('warrior_pro.db')
+            c = conn.cursor()
+            # Verificamos si existe el ID
+            c.execute("SELECT cliente FROM recibos WHERE id=?", (id_a_borrar,))
+            resultado = c.fetchone()
+            
+            if resultado:
+                c.execute("DELETE FROM recibos WHERE id=?", (id_a_borrar,))
                 conn.commit()
+                st.sidebar.success(f"Fila {id_a_borrar} (Cliente: {resultado[0]}) eliminada.")
                 conn.close()
-                st.sidebar.success("Base de datos limpiada. Reiniciando...")
                 st.rerun()
             else:
-                st.sidebar.error("⚠️ Primero marca la casilla de confirmación.")
+                st.sidebar.error("Ese ID no existe.")
+                conn.close()
     else:
         st.info("No hay registros todavía.")

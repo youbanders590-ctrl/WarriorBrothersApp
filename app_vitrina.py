@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components  # Nueva herramienta para el mapa
 import base64
 
 # --- CONFIGURACIÓN ---
@@ -14,15 +15,13 @@ def get_base64_image(image_path):
 logo_base_64 = get_base64_image("logo.png")
 logo_html = f'<img src="data:image/png;base64,{logo_base_64}" class="logo-img">' if logo_base_64 else ""
 
-# --- ESTILOS CSS (CORREGIDOS PARA VISIBILIDAD) ---
+# --- ESTILOS CSS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@300;400;700&display=swap');
 
-    /* Fondo general */
     .stApp { background-color: #f8f9fa; }
 
-    /* Hero Container (Negro) */
     .hero-container {
         background: #121212; padding: 70px 40px; border-radius: 30px;
         text-align: center; color: white; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
@@ -32,7 +31,6 @@ st.markdown("""
     .flex-header { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
     .logo-img { width: 100px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1)); }
 
-    /* Título Amarillo Difuminado */
     .main-title { 
         font-family: 'Montserrat', sans-serif; font-size: 4.2rem; letter-spacing: -2px; 
         margin: 0; background: linear-gradient(90deg, #FFFFFF 30%, #FFD700 100%);
@@ -42,40 +40,32 @@ st.markdown("""
 
     .sub-title { font-family: 'Roboto', sans-serif; font-size: 1.5rem; color: #FFD700; font-weight: 400; margin-top: 10px; }
 
-    /* Botón WhatsApp */
     .whatsapp-btn {
         background: linear-gradient(45deg, #25D366, #128C7E); color: white !important;
         padding: 18px 40px; text-decoration: none; border-radius: 50px;
         font-family: 'Montserrat', sans-serif; font-weight: 700; display: inline-block;
         transition: 0.4s; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3); margin-top: 25px;
     }
-    .whatsapp-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(37, 211, 102, 0.5); }
 
-    /* TARJETAS DE SERVICIO (TEXTO OSCURO PARA VISIBILIDAD) */
     .service-card {
         background: white; border-radius: 20px; padding: 30px 20px; text-align: center;
         border: 2px solid #e0e0e0; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         height: 100%; transition: 0.3s;
     }
-    .service-card:hover { transform: translateY(-5px); border-color: #FFD700; }
     
-    .service-card h3 { color: #1a1a1a !important; font-family: 'Montserrat', sans-serif; margin-bottom: 10px; }
-    .service-card p { color: #444444 !important; font-family: 'Roboto', sans-serif; font-size: 1rem; }
+    .service-card h3 { color: #1a1a1a !important; font-family: 'Montserrat', sans-serif; }
+    .service-card p { color: #444444 !important; font-family: 'Roboto', sans-serif; }
 
-    /* CAJAS DE INFORMACIÓN (TEXTO OSCURO) */
     .info-box {
         background: #ffffff; padding: 25px; border-radius: 20px;
         border-left: 8px solid #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        color: #1a1a1a !important;
+        color: #1a1a1a !important; margin-bottom: 20px;
     }
-    .info-box h3 { color: #1a1a1a !important; margin-bottom: 15px; }
-    .info-box p { color: #333333 !important; margin: 8px 0; }
 
-    /* Botones Redes */
     .social-btn {
         display: inline-flex; align-items: center; gap: 8px;
         padding: 10px 20px; border-radius: 10px; text-decoration: none;
-        color: white !important; font-weight: bold; margin: 5px; transition: 0.3s;
+        color: white !important; font-weight: bold; margin: 5px;
     }
     .tiktok { background: #000000; border: 1px solid #fe2c55; }
     .facebook { background: #1877F2; }
@@ -105,29 +95,20 @@ servicios = [
 ]
 for col, ser in zip([c1, c2, c3, c4], servicios):
     with col:
-        st.markdown(f"""
-            <div class="service-card">
-                <h3>{ser[0]}</h3>
-                <p>{ser[1]}</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div class="service-card"><h3>{ser[0]}</h3><p>{ser[1]}</p></div>""", unsafe_allow_html=True)
 
-# --- 3. SECCIÓN REDES Y CONTACTO ---
 st.write("<br>", unsafe_allow_html=True)
-col_redes, col_info = st.columns(2)
 
-with col_redes:
+# --- 3. SECCIÓN REDES, CONTACTO Y MAPA ---
+col_izq, col_der = st.columns([1, 1.2]) # El mapa un poco más ancho
+
+with col_izq:
     st.markdown("""
         <div class="info-box">
             <h3>📱 Síguenos en Redes</h3>
-            <p>Mira nuestras restauraciones en video:</p>
             <a href="https://www.tiktok.com/" class="social-btn tiktok">🎵 TikTok</a>
             <a href="https://www.facebook.com/" class="social-btn facebook">👤 Facebook</a>
         </div>
-    """, unsafe_allow_html=True)
-
-with col_info:
-    st.markdown("""
         <div class="info-box" style="border-left-color: #FFD700;">
             <h3>📍 Información de Contacto</h3>
             <p><b>Dirección:</b> Centro de la ciudad, Loja, Ecuador</p>
@@ -135,5 +116,15 @@ with col_info:
             <p><b>Horario:</b> Lun - Vie (08:00 - 18:00)</p>
         </div>
     """, unsafe_allow_html=True)
+
+with col_der:
+    st.markdown("<h3 style='color: #1a1a1a; font-family: Montserrat;'>Encuéntranos Aquí</h3>", unsafe_allow_html=True)
+    # Tu código de Google Maps ajustado al 100% de ancho
+    mapa_google = """
+    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15926.315510617305!2d-79.2062601!3d-3.9931899!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb490059f37947%3A0x6b04859873a0058e!2sThe%20Warrior%20Brothers!5e0!3m2!1ses!2sec!4v1740344000000!5m2!1ses!2sec" 
+    width="100%" height="350" style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
+    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    """
+    components.html(mapa_google, height=370)
 
 st.markdown("<br><center style='color: #666;'>© 2026 The Warrior Brothers | Loja, Ecuador 🛡️⚒️</center>", unsafe_allow_html=True)

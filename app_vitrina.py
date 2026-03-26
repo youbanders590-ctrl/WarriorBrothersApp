@@ -128,7 +128,7 @@ st.markdown(f"""
             {logo_html}
             <h1 class="main-title">THE WARRIOR BROTHERS</h1>
         </div>
-        <p class="sub-title">MAESTRÍA EN RESTAURACIÓN DE CALZADO Y CUERO</p>
+        <p class="sub-title">ESPECIALISTAS EN RESTAURACIÓN DE CALZADO Y CUERO</p>
         <p style="font-family: 'Roboto', sans-serif; font-size: 1.2rem; color: #a8a8a8; margin-top: 10px;">
             Artesanía Lojana con Precisión Digital
         </p>

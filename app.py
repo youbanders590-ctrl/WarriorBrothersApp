@@ -72,16 +72,19 @@ with tab_registro:
             conn.commit()
             conn.close()
             st.success(f"✅ ¡Trabajo de {nombre.upper()} registrado!")
-            st.rerun() # Para actualizar la tabla de la otra pestaña de inmediato
+            
+            msg = f"👞🔨 *THE WARRIOR BROTHERS*\n¡Hola {nombre.upper()}!\nSaldo: ${saldo:.2f}\nEntrega: {f_entrega}"
+            link = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={urllib.parse.quote(msg)}"
+            st.markdown(f'<a href="{link}" target="_blank" style="text-decoration:none;"><div style="background-color:#25D366;color:white;padding:15px;border-radius:10px;text-align:center;font-weight:bold;">📲 ENVIAR POR WHATSAPP</div></a>', unsafe_allow_html=True)
 
-# --- PESTAÑA 2: HISTORIAL Y BORRADO POR FILA ---
+# --- PESTAÑA 2: HISTORIAL INTERACTIVO ---
 with tab_historial:
     conn = sqlite3.connect('warrior_pro.db')
     df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
     conn.close()
 
     if not df.empty:
-        # Métricas
+        # Métricas principales
         m1, m2, m3 = st.columns(3)
         m1.metric("Ingreso Total", f"${df['total'].sum():.2f}")
         m2.metric("Caja (Abonos)", f"${df['abono'].sum():.2f}")
@@ -89,28 +92,34 @@ with tab_historial:
         
         st.divider()
         st.subheader("🗂️ Registro de Trabajos")
-        # Mostramos la tabla. El ID es la primera columna.
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        st.info("💡 Para borrar: Haz clic en el cuadrito a la izquierda de la fila y presiona la tecla 'Suprimir' (Delete) o usa el icono de basura que aparecerá.")
         
-        # --- SECCIÓN PARA BORRAR FILA ESPECÍFICA ---
-        st.sidebar.title("🗑️ Eliminar Registro")
-        id_a_borrar = st.sidebar.number_input("ID de la fila a borrar:", min_value=1, step=1)
+        # EL EDITOR DE DATOS (Aquí sucede la magia de la X para borrar)
+        # Permite borrar filas de forma nativa
+        df_editado = st.data_editor(
+            df, 
+            use_container_width=True, 
+            hide_index=True, 
+            num_rows="dynamic", # Esto habilita el borrado y añadido de filas
+            key="tabla_editor"
+        )
         
-        if st.sidebar.button("Eliminar Fila # " + str(id_a_borrar)):
-            conn = sqlite3.connect('warrior_pro.db')
-            c = conn.cursor()
-            # Verificamos si existe el ID
-            c.execute("SELECT cliente FROM recibos WHERE id=?", (id_a_borrar,))
-            resultado = c.fetchone()
+        # Si el usuario borró algo en la tabla visual, actualizamos la Base de Datos
+        if len(df_editado) < len(df):
+            # Encontramos qué IDs ya no están en el DataFrame editado
+            ids_actuales = df_editado['id'].tolist()
+            ids_originales = df['id'].tolist()
+            ids_a_eliminar = [i for i in ids_originales if i not in ids_actuales]
             
-            if resultado:
-                c.execute("DELETE FROM recibos WHERE id=?", (id_a_borrar,))
+            if ids_a_eliminar:
+                conn = sqlite3.connect('warrior_pro.db')
+                c = conn.cursor()
+                for id_borrar in ids_a_eliminar:
+                    c.execute("DELETE FROM recibos WHERE id=?", (id_borrar,))
                 conn.commit()
-                st.sidebar.success(f"Fila {id_a_borrar} (Cliente: {resultado[0]}) eliminada.")
                 conn.close()
+                st.success("✅ Registro eliminado correctamente.")
                 st.rerun()
-            else:
-                st.sidebar.error("Ese ID no existe.")
-                conn.close()
+
     else:
         st.info("No hay registros todavía.")

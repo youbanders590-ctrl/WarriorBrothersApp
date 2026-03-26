@@ -1,100 +1,74 @@
 import streamlit as st
 import base64
 
-# --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(
-    page_title="🛡️ The Warrior Brothers | Maestros en Reparación de Calzado",
-    page_icon="👞",
-    layout="wide",
-)
+# 1. Configuración inicial
+st.set_page_config(page_title="The Warrior Brothers", layout="wide")
 
-# --- FUNCIÓN MAESTRA PARA CARGAR EL LOGO LOCAL (ANTI-DAÑOS) ---
-# Esto convierte tu logo.png en un código que el HTML entiende
-def get_base64_image(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
+# 2. Función para convertir tu logo.png en código que la web entienda
+def cargar_logo(archivo):
+    try:
+        with open(archivo, "rb") as f:
+            data = base64.b64encode(f.read()).decode()
+            return f'data:image/png;base64,{data}'
+    except:
+        return None
 
-# Intentamos cargar el logo localmente. Si no existe, usamos un emoji.
-try:
-    logo_base64 = get_base64_image("logo.png")
-    # Si carga bien, creamos la etiqueta img con los datos
-    logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="logo-img">'
-except FileNotFoundError:
-    # Si el archivo no está, ponemos un emoji para no romper el diseño
-    logo_html = '<span style="font-size: 80px; margin-right: 20px;">🐺</span>'
+logo_data = cargar_logo("logo.png")
 
-# --- ESTILOS CSS PERSONALIZADOS (Activados) ---
+# 3. Estilos (CSS) - Aquí definimos que el logo vaya al lado del texto
 st.markdown("""
     <style>
-    /* Fondo y texto general */
-    .stApp { background-color: #fcfdfa; color: #1e1e1e; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-    
-    /* Botón de WhatsApp */
-    .whatsapp-btn {
-        background-color: #25D366; color: white !important; padding: 15px 30px; text-decoration: none;
-        font-size: 1.1rem; border-radius: 50px; font-weight: bold; text-align: center;
-        display: inline-block; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    .hero-container {
+        background-color: #1e1e1e;
+        padding: 80px;
+        border-radius: 20px;
+        text-align: center;
+        color: white;
     }
-    .whatsapp-btn:hover { background-color: #1ebe57; transform: translateY(-3px); color: white !important; }
-
-    /* Estilo de la Cabecera Negra (Hero) */
-    .hero-black {
-        background-color: #1e1e1e; color: white; padding: 100px 40px; text-align: center; border-radius: 20px; margin-bottom: 50px;
+    .flex-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
     }
-    .header-box {
-        display: flex; align-items: center; justify-content: center; margin-bottom: 25px;
-    }
-    .logo-img {
-        max-width: 100px; height: auto; margin-right: 25px;
-        /*filter: brightness(0) invert(1); /* Descomenta si tu logo es negro para hacerlo blanco */
-    }
-    .title-text {
-        color: white !important; font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; margin: 0;
-    }
-    
-    /* Tarjetas de Servicios */
-    .service-card {
-        background-color: white; border-radius: 15px; padding: 25px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.06); text-align: center; height: 100%; border: 1px solid #eee;
+    .logo-img { width: 90px; height: auto; }
+    .main-title { font-size: 3.5rem; font-weight: 900; margin: 0; color: white; }
+    .btn-wa {
+        background-color: #25D366;
+        color: white !important;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: bold;
+        display: inline-block;
+        margin-top: 30px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 1. SECCIÓN HÉROE (CON EL FIX DEFINITIVO) ---
-# He añadido 'unsafe_allow_html=True' al final de esta sección para que no salga el texto
-st.markdown(f"""
-    <div class="hero-black">
-        
-        <div class="header-box">
-            {logo_html}
-            <h1 class="title-text">THE WARRIOR BROTHERS</h1>
-        </div>
-        
-        <p style="font-size: 1.6rem; font-weight: 300; color: #ccc;">Maestría en Restauración de Calzado y Cuero</p>
-        <p style="font-size: 1.1rem; margin-top: 20px; max-width: 800px; margin-left: auto; margin-right: auto;">
-            No solo reparamos, devolvemos la esencia a tus artículos favoritos. Artesanía lojana con precisión digital.
-        </p>
-        <br>
-        <a href="https://wa.me/593994718745?text=¡Hola%20Warrior%20Brothers!%20Quisiera%20cotizar%20una%20reparación" target="_blank" class="whatsapp-btn">Cotizar mi Trabajo Ahora</a>
+# 4. Construcción del diseño (HTML)
+# Si el logo existe, lo ponemos; si no, solo el texto
+logo_html = f'<img src="{logo_data}" class="logo-img">' if logo_data else ""
+
+html_final = f"""
+<div class="hero-container">
+    <div class="flex-header">
+        {logo_html}
+        <h1 class="main-title">THE WARRIOR BROTHERS</h1>
     </div>
-    """, unsafe_allow_html=True)
+    <p style="font-size: 1.5rem; color: #ccc;">Maestría en Restauración de Calzado y Cuero</p>
+    <p>Artesanía lojana con precisión digital.</p>
+    <a href="https://wa.me/593994718745" class="btn-wa">Cotizar mi Trabajo Ahora</a>
+</div>
+"""
 
-# --- SERVICIOS Y CONTACTO (Resto de la página) ---
-st.header("🛠️ Nuestros Servicios")
-c1, c2, c3 = st.columns(3)
-with c1: st.info("👞 **Suelas y Pisos**")
-with c2: st.info("🎨 **Tinturado Pro**")
-with c3: st.info("👠 **Tacos y Tapas**")
+# CRUCIAL: El permiso 'unsafe_allow_html=True' debe ir aquí
+st.markdown(html_final, unsafe_allow_html=True)
 
-st.write("")
-st.header("📍 Encuéntranos en Loja")
-st.markdown("""
-    **Dirección:** Centro de la ciudad, Loja, Ecuador<br>
-    **WhatsApp:** [0994718745](https://wa.me/593994718745)
-""", unsafe_allow_html=True)
-
-st.markdown("""
-    <div style="text-align: center; color: #777; padding: 40px; border-top: 1px solid #eee; margin-top: 60px;">
-        <p>© 2026 The Warrior Brothers. Orgullosamente Lojanos. 🛡️⚒️</p>
-    </div>
-    """, unsafe_allow_html=True)
+# 5. Resto de la página (Servicios simples para probar)
+st.write("---")
+col1, col2, col3 = st.columns(3)
+with col1: st.subheader("👞 Suelas")
+with col2: st.subheader("🎨 Tinturado")
+with col3: st.subheader("👠 Tacos")

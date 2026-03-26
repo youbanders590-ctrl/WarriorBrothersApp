@@ -15,15 +15,9 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS recibos 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  fecha TEXT, 
-                  cliente TEXT, 
-                  celular TEXT,
-                  articulo TEXT, 
-                  reparacion TEXT, 
-                  total REAL, 
-                  abono REAL, 
-                  saldo REAL,
-                  entrega TEXT)''')
+                  fecha TEXT, cliente TEXT, celular TEXT,
+                  articulo TEXT, reparacion TEXT, total REAL, 
+                  abono REAL, saldo REAL, entrega TEXT)''')
     conn.commit()
     conn.close()
 
@@ -46,9 +40,7 @@ if not st.session_state["autenticado"]:
 
 # --- 3. DISEÑO DE INTERFAZ ---
 st.markdown("<h1 style='text-align: center;'>🛡️ THE WARRIOR BROTHERS</h1>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center; color: #888;'>Gestión Profesional de Calzado</h3>", unsafe_allow_html=True)
 
-# Pestañas para organizar el trabajo
 tab_registro, tab_historial = st.tabs(["📝 REGISTRAR TRABAJO", "📊 CAJA Y CONTROL"])
 
 # --- PESTAÑA 1: REGISTRO ---
@@ -73,7 +65,6 @@ with tab_registro:
             f_registro = datetime.now(zona_ec).strftime("%d/%m/%Y %H:%M")
             f_entrega = fecha_entrega.strftime("%d/%m/%Y")
             
-            # Guardar en SQLite
             conn = sqlite3.connect('warrior_pro.db')
             c = conn.cursor()
             c.execute("""INSERT INTO recibos (fecha, cliente, celular, articulo, reparacion, total, abono, saldo, entrega) 
@@ -83,46 +74,42 @@ with tab_registro:
             conn.close()
             
             st.success(f"✅ ¡Trabajo de {nombre.upper()} registrado!")
-
-            # WhatsApp
-            msg = (f"👞🔨 *THE WARRIOR BROTHERS*\n"
-                   f"¡Hola *{nombre.upper()}*!\n"
-                   f"Recibimos su *{articulo}* para: {reparacion}\n"
-                   f"💰 *Total:* ${total:.2f} | *Abono:* ${abono:.2f}\n"
-                   f"💳 *Saldo:* *${saldo:.2f}*\n"
-                   f"📅 *Entrega:* {f_entrega}\n\n"
-                   f"¡Gracias por su confianza! ✨")
             
+            msg = f"👞🔨 *THE WARRIOR BROTHERS*\n¡Hola {nombre.upper()}!\nSaldo: ${saldo:.2f}\nEntrega: {f_entrega}"
             link = f"https://api.whatsapp.com/send?phone=593{celular.lstrip('0')}&text={urllib.parse.quote(msg)}"
-            st.markdown(f'''
-                <a href="{link}" target="_blank" style="text-decoration:none;">
-                    <div style="background-color:#25D366;color:white;padding:15px;border-radius:10px;text-align:center;font-weight:bold;font-size:18px;">
-                        📲 ENVIAR RECIBO POR WHATSAPP
-                    </div>
-                </a>
-            ''', unsafe_allow_html=True)
-        else:
-            st.error("⚠️ Falta nombre o celular.")
+            st.markdown(f'<a href="{link}" target="_blank" style="text-decoration:none;"><div style="background-color:#25D366;color:white;padding:15px;border-radius:10px;text-align:center;font-weight:bold;">📲 ENVIAR POR WHATSAPP</div></a>', unsafe_allow_html=True)
 
-# --- PESTAÑA 2: HISTORIAL Y MÉTRICAS ---
+# --- PESTAÑA 2: HISTORIAL Y BORRADO ---
 with tab_historial:
     conn = sqlite3.connect('warrior_pro.db')
     df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
     conn.close()
 
     if not df.empty:
-        # Métricas de dinero
+        # Métricas
         m1, m2, m3 = st.columns(3)
-        m1.metric("Ingreso Total (Trabajos)", f"${df['total'].sum():.2f}")
-        m2.metric("Dinero en Caja (Abonos)", f"${df['abono'].sum():.2f}", delta="Efectivo real")
-        m3.metric("Por Cobrar (Saldos)", f"${df['saldo'].sum():.2f}", delta_color="inverse")
+        m1.metric("Ingreso Total", f"${df['total'].sum():.2f}")
+        m2.metric("Caja (Abonos)", f"${df['abono'].sum():.2f}")
+        m3.metric("Por Cobrar", f"${df['saldo'].sum():.2f}")
         
         st.divider()
-        st.subheader("🗂️ Registro Completo")
         st.dataframe(df, use_container_width=True)
         
-        # Botón para descargar por si quieres tenerlo en Excel
-        csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button("📥 Descargar reporte para Excel", csv, "reporte_warrior.csv", "text/csv")
+        # --- SECCIÓN DE LIMPIEZA PARA PRUEBAS ---
+        st.sidebar.divider()
+        st.sidebar.warning("⚙️ ZONA DE MANTENIMIENTO")
+        confirmar_borrado = st.sidebar.checkbox("Confirmar que quiero borrar todo")
+        
+        if st.sidebar.button("🗑️ BORRAR TODA LA BASE DE DATOS"):
+            if confirmar_borrado:
+                conn = sqlite3.connect('warrior_pro.db')
+                c = conn.cursor()
+                c.execute("DELETE FROM recibos") # Esto vacía la tabla
+                conn.commit()
+                conn.close()
+                st.sidebar.success("Base de datos limpiada. Reiniciando...")
+                st.rerun()
+            else:
+                st.sidebar.error("⚠️ Primero marca la casilla de confirmación.")
     else:
         st.info("No hay registros todavía.")

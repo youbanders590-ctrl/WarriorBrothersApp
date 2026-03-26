@@ -71,7 +71,7 @@ st.markdown(f"""
             {logo_html}
             <h1 class="main-title">THE WARRIOR BROTHERS</h1>
         </div>
-        <p class="sub-title">MAESTRÍA EN RESTAURACIÓN DE CALZADO Y CUERO</p>
+        <p class="sub-title">ESPECIALISTAS EN RESTAURACIÓN DE CALZADO Y CUERO</p>
         <a href="https://wa.me/593994718745" class="whatsapp-btn">Cotizar mi Trabajo Ahora</a>
     </div>
     """, unsafe_allow_html=True)

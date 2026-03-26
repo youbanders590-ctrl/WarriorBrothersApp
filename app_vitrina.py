@@ -14,146 +14,105 @@ def get_base64_image(image_path):
 logo_base_64 = get_base64_image("logo.png")
 logo_html = f'<img src="data:image/png;base64,{logo_base_64}" class="logo-img">' if logo_base_64 else ""
 
-# --- MEJORAS GRÁFICAS (CSS) ---
+# --- ESTILOS CSS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@300;400;700&display=swap');
 
-    /* Fondo general */
-    .stApp { 
-        background-color: #f4f4f4; 
-    }
+    .stApp { background-color: #f4f4f4; }
 
-    /* Contenedor Negro Principal */
+    /* Hero Container */
     .hero-container {
-        background: #121212;
-        padding: 90px 40px;
-        border-radius: 30px;
-        text-align: center;
-        color: white;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        border: 1px solid #333;
-        margin-bottom: 50px;
+        background: #121212; padding: 80px 40px; border-radius: 30px;
+        text-align: center; color: white; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        border: 1px solid #333; margin-bottom: 50px;
     }
 
-    .flex-header { 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 25px; 
-        flex-wrap: wrap;
-    }
-
+    .flex-header { display: flex; align-items: center; justify-content: center; gap: 25px; flex-wrap: wrap; }
     .logo-img { width: 110px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); }
 
-    /* TÍTULO CON DIFUMINADO AMARILLO (SOLICITADO) */
+    /* Título Amarillo Difuminado */
     .main-title { 
-        font-family: 'Montserrat', sans-serif; 
-        font-size: 4.5rem; 
-        letter-spacing: -2px; 
-        margin: 0; 
-        /* Degradado de Blanco a Amarillo Dorado */
-        background: linear-gradient(90deg, #FFFFFF 30%, #FFD700 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 900;
-        line-height: 1.1;
+        font-family: 'Montserrat', sans-serif; font-size: 4.5rem; letter-spacing: -2px; 
+        margin: 0; background: linear-gradient(90deg, #FFFFFF 30%, #FFD700 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        font-weight: 900; line-height: 1.1;
     }
 
-    /* Subtítulo */
-    .sub-title {
-        font-family: 'Roboto', sans-serif;
-        font-size: 1.6rem;
-        color: #FFD700; /* Amarillo para resaltar */
-        font-weight: 400;
-        margin-top: 15px;
-        letter-spacing: 2px;
-    }
+    .sub-title { font-family: 'Roboto', sans-serif; font-size: 1.6rem; color: #FFD700; font-weight: 400; margin-top: 15px; }
 
-    /* Botón WhatsApp */
-    .btn-wa {
-        background: linear-gradient(45deg, #25D366, #128C7E);
-        color: white !important;
-        padding: 20px 50px;
-        text-decoration: none;
-        border-radius: 50px;
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 700;
-        display: inline-block;
-        transition: 0.4s;
-        box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
-        margin-top: 30px;
-        text-transform: uppercase;
+    /* Botones de Redes Sociales */
+    .social-btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 12px 25px; border-radius: 12px; text-decoration: none;
+        color: white !important; font-weight: bold; font-family: 'Roboto', sans-serif;
+        transition: 0.3s; margin: 10px;
     }
-    .btn-wa:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(37, 211, 102, 0.6);
+    .tiktok { background: #000000; border: 1px solid #ff0050; }
+    .facebook { background: #1877F2; }
+    .whatsapp-btn {
+        background: linear-gradient(45deg, #25D366, #128C7E); color: white !important;
+        padding: 18px 40px; text-decoration: none; border-radius: 50px;
+        font-family: 'Montserrat', sans-serif; font-weight: 700; display: inline-block;
+        transition: 0.4s; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); margin-top: 25px;
     }
+    .social-btn:hover { transform: translateY(-3px); opacity: 0.9; }
 
-    /* Tarjetas de Servicio - MEJORADA VISIBILIDAD */
-    .service-card {
-        background: white;
-        border-radius: 20px;
-        padding: 35px 25px;
-        text-align: center;
-        border: 2px solid #eeeeee;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-        transition: 0.3s ease-in-out;
-        height: 100%;
-    }
-    .service-card:hover {
-        transform: translateY(-10px);
-        border-color: #FFD700;
-        box-shadow: 0 20px 45px rgba(0,0,0,0.15);
-    }
-    .service-card h3 {
-        font-family: 'Montserrat', sans-serif;
-        color: #121212;
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-    }
-    .service-card p {
-        font-family: 'Roboto', sans-serif;
-        color: #444; /* Gris oscuro para lectura fácil */
-        font-size: 1.1rem;
-        line-height: 1.4;
+    /* Info Boxes */
+    .info-box {
+        background: #fff; padding: 30px; border-radius: 20px;
+        border-left: 10px solid #1e1e1e; box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: 100%;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- CONTENIDO ---
+# --- 1. CABECERA ---
 st.markdown(f"""
     <div class="hero-container">
         <div class="flex-header">
             {logo_html}
             <h1 class="main-title">THE WARRIOR BROTHERS</h1>
         </div>
-        <p class="sub-title">ESPECIALISTAS EN RESTAURACIÓN DE CALZADO Y CUERO</p>
-        <p style="font-family: 'Roboto', sans-serif; font-size: 1.2rem; color: #a8a8a8; margin-top: 10px;">
-            Artesanía Lojana con Precisión Digital
-        </p>
-        <a href="https://wa.me/593994718745" class="btn-wa">Cotizar mi Trabajo</a>
+        <p class="sub-title">MAESTRÍA EN RESTAURACIÓN DE CALZADO Y CUERO</p>
+        <a href="https://wa.me/593994718745" class="whatsapp-btn">Cotizar Trabajo Ahora</a>
     </div>
     """, unsafe_allow_html=True)
 
-# --- SERVICIOS ---
-st.markdown("<h2 style='text-align: center; font-family: Montserrat; margin-bottom: 40px;'>Nuestras Especialidades</h2>", unsafe_allow_html=True)
-
-col1, col2, col3, col4 = st.columns(4)
-servicios = [
-    ["👞 Suelas", "Cambio de suelas de alta montaña y ciudad con pegado industrial."],
-    ["🎨 Tinturado", "Restauración de color total con pigmentos de alta gama."],
-    ["👠 Tacos", "Reparación estructural y tapas para calzado formal."],
-    ["🎒 Cuero", "Mantenimiento y costura de bolsos, chaquetas y accesorios."]
-]
-
-for col, ser in zip([col1, col2, col3, col4], servicios):
+# --- 2. SERVICIOS (Igual que antes) ---
+st.markdown("<h2 style='text-align: center;'>Nuestras Especialidades</h2>", unsafe_allow_html=True)
+c1, c2, c3, c4 = st.columns(4)
+servicios = [["👞 Suelas", "Restauración industrial."], ["🎨 Tinturado", "Color premium."], ["👠 Tacos", "Reparación fina."], ["🎒 Cuero", "Mantenimiento pro."]]
+for col, ser in zip([c1, c2, c3, c4], servicios):
     with col:
-        st.markdown(f"""
-            <div class="service-card">
-                <h3>{ser[0]}</h3>
-                <p>{ser[1]}</p>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown(f'<div style="background:white; padding:20px; border-radius:15px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.05);"><h3>{ser[0]}</h3><p>{ser[1]}</p></div>', unsafe_allow_html=True)
 
-st.markdown("<br><br><center style='color: #888;'>© 2026 The Warrior Brothers | Loja, Ecuador</center>", unsafe_allow_html=True)
+# --- 3. SECCIÓN REDES Y CONTACTO ---
+st.write("---")
+col_redes, col_info = st.columns(2)
+
+with col_redes:
+    st.markdown("""
+        <div class="info-box">
+            <h3>📱 Síguenos en Redes</h3>
+            <p>Mira nuestros procesos de restauración en vivo:</p>
+            <a href="https://www.tiktok.com/@tu_usuario" class="social-btn tiktok">
+                <span>🎵</span> TikTok
+            </a>
+            <a href="https://www.facebook.com/tu_pagina" class="social-btn facebook">
+                <span>👤</span> Facebook
+            </a>
+            <p style="margin-top:20px; font-size:0.9rem; color:#666;">¡Publicamos transformaciones increíbles cada semana!</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+with col_info:
+    st.markdown("""
+        <div class="info-box" style="border-left-color: #FFD700;">
+            <h3>📍 Información</h3>
+            <p><b>Dirección:</b> Centro de la ciudad, Loja, Ecuador</p>
+            <p><b>WhatsApp:</b> 099 471 8745</p>
+            <p><b>Horario:</b> Lun - Vie (08:00 - 18:00)</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("<br><center style='color: #888;'>© 2026 The Warrior Brothers | Loja, Ecuador 🛡️⚒️</center>", unsafe_allow_html=True)

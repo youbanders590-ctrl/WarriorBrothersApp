@@ -44,13 +44,13 @@ tab_reg, tab_hist = st.tabs(["📝 REGISTRAR", "📊 HISTORIAL"])
 with tab_reg:
     with st.form("f_reg", clear_on_submit=True):
         c1, c2 = st.columns(2)
-        nombre = c1.text_input("Cliente:")
-        celular = c1.text_input("WhatsApp:")
-        articulo = c1.text_input("Artículo:")
-        reparacion = c2.text_input("Reparación:")
-        total = c2.number_input("Total $", min_value=0.0)
-        abono = c2.number_input("Abono $", min_value=0.0)
-        f_ent = c2.date_input("Entrega:")
+        nombre = c1.text_input("👤 Cliente:")
+        celular = c1.text_input("📱 WhatsApp:")
+        articulo = c1.text_input("💼 Artículo:")
+        reparacion = c2.text_input("🛠️ Reparación:")
+        total = c2.number_input("💰 Total $", min_value=0.0)
+        abono = c2.number_input("💵 Abono $", min_value=0.0)
+        f_ent = c2.date_input("📅 Entrega:")
         if st.form_submit_button("💾 GUARDAR"):
             if nombre and celular:
                 saldo = total - abono
@@ -63,32 +63,33 @@ with tab_reg:
                 conn.close()
                 st.rerun()
 
-# --- PESTAÑA 2: HISTORIAL MINIMALISTA ---
+# --- PESTAÑA 2: HISTORIAL CON LA X ROJA ---
 with tab_hist:
     conn = sqlite3.connect('warrior_pro.db')
     df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
     conn.close()
 
     if not df.empty:
-        # Añadimos columna de selección con solo una X
+        # Columna de selección minimalista
         df.insert(0, "X", False)
 
-        # Tabla interactiva
+        # Editor de datos con la columna X pequeña
         df_ed = st.data_editor(
             df,
             hide_index=True,
             use_container_width=True,
             column_config={
                 "X": st.column_config.CheckboxColumn("❌", default=False),
-                "id": None
+                "id": None # Ocultamos el ID
             },
             disabled=[col for col in df.columns if col != "X"]
         )
 
-        # Botón de borrado simple
+        # Botón de borrado minimalista: solo una X roja
         selec = df_ed[df_ed["X"] == True]
         if not selec.empty:
-            if st.button(f"BORRAR ({len(selec)})"):
+            # Botón estilizado como una X roja
+            if st.button("❌", help="Confirmar eliminación de filas seleccionadas", type="primary"):
                 ids = selec["id"].tolist()
                 conn = sqlite3.connect('warrior_pro.db')
                 c = conn.cursor()

@@ -2,10 +2,10 @@ import streamlit as st
 import streamlit.components.v1 as components
 import base64
 
-# --- CONFIGURACIÓN DE PÁGINA ---
+# --- 1. CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(page_title="The Warrior Brothers", page_icon="👞", layout="wide")
 
-# --- FUNCIÓN PARA CARGAR LOGO ---
+# --- 2. FUNCIÓN PARA EL LOGO ---
 def get_base64_image(image_path):
     try:
         with open(image_path, "rb") as img_file:
@@ -15,7 +15,7 @@ def get_base64_image(image_path):
 logo_base_64 = get_base64_image("logo.png")
 logo_html = f'<img src="data:image/png;base64,{logo_base_64}" class="logo-img">' if logo_base_64 else ""
 
-# --- ESTILOS CSS ---
+# --- 3. ESTILOS VISUALES (CSS) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@300;400;700&display=swap');
@@ -61,7 +61,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 1. SECCIÓN HERO ---
+# --- 4. SECCIÓN PRINCIPAL (HERO) ---
 st.markdown(f"""
     <div class="hero-container">
         <div class="flex-header">
@@ -73,7 +73,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- 2. SECCIÓN SERVICIOS ---
+# --- 5. SECCIÓN SERVICIOS ---
 st.markdown("<h2 style='text-align: center; color: #1a1a1a; font-family: Montserrat; margin-bottom: 30px;'>Nuestros Servicios</h2>", unsafe_allow_html=True)
 c1, c2, c3, c4 = st.columns(4)
 servicios = [
@@ -88,7 +88,7 @@ for col, ser in zip([c1, c2, c3, c4], servicios):
 
 st.write("<br>", unsafe_allow_html=True)
 
-# --- 3. SECCIÓN CONTACTO Y UBICACIÓN ---
+# --- 6. SECCIÓN CONTACTO Y MAPA ---
 col_info, col_mapa = st.columns([1, 1.2])
 
 with col_info:
@@ -109,10 +109,13 @@ with col_info:
 with col_mapa:
     st.markdown("<h3 style='color: #1a1a1a; font-family: Montserrat; margin-left: 5px;'>Visítanos en nuestro Taller</h3>", unsafe_allow_html=True)
     
-    # Tu código exacto con ajuste de ancho al 100%
+    # Hemos usado https y ajustado el tamaño para evitar que salga en blanco
     mapa_html = """
-    <iframe src="http://googleusercontent.com/maps.google.com/7" width="100%" height="400" style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4639.308515158177!2d-79.2085081932307!3d-3.996496214635539!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb491f5912b73b%3A0xa1e733db367e07a6!2sThe%20Warrior%20Brothers!5e1!3m2!1ses!2sec!4v1774539966491!5m2!1ses!2sec1" 
+    width="100%" height="400" style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
+    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     """
-    components.html(mapa_html, height=420)
+    # El height de components.html (450) es mayor al del iframe (400) para asegurar la carga
+    components.html(mapa_html, height=450)
 
 st.markdown("<br><center style='color: #666;'>© 2026 The Warrior Brothers | Loja, Ecuador 🛡️⚒️</center><br>", unsafe_allow_html=True)

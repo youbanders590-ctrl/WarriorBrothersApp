@@ -61,54 +61,41 @@ with tab_reg:
                           (f_reg_str, nombre.upper(), celular, articulo, reparacion, total, abono, saldo, f_ent.strftime("%d/%m/%Y")))
                 conn.commit()
                 conn.close()
-                st.success("¡Registrado!")
                 st.rerun()
 
-# --- PESTAÑA 2: HISTORIAL CON BORRADO INSTANTÁNEO ---
+# --- PESTAÑA 2: HISTORIAL MINIMALISTA ---
 with tab_hist:
     conn = sqlite3.connect('warrior_pro.db')
     df = pd.read_sql_query("SELECT * FROM recibos ORDER BY id DESC", conn)
     conn.close()
 
     if not df.empty:
-        # Insertamos la columna de borrado con valor falso por defecto
-        df.insert(0, "BORRAR", False)
+        # Añadimos columna de selección con solo una X
+        df.insert(0, "X", False)
 
-        st.subheader("Selecciona el cuadro para eliminar la fila de inmediato:")
-        
-        # El editor detecta el cambio en el checkbox
-        df_editado = st.data_editor(
+        # Tabla interactiva
+        df_ed = st.data_editor(
             df,
             hide_index=True,
             use_container_width=True,
             column_config={
-                "BORRAR": st.column_config.CheckboxColumn(
-                    "❌", 
-                    help="Haz clic aquí para borrar esta fila",
-                    default=False
-                ),
-                "id": None # Mantenemos el ID oculto
+                "X": st.column_config.CheckboxColumn("❌", default=False),
+                "id": None
             },
-            disabled=[col for col in df.columns if col != "BORRAR"]
+            disabled=[col for col in df.columns if col != "X"]
         )
 
-        # Lógica: Si el DataFrame editado tiene algún "True" en la columna BORRAR
-        if df_editado["BORRAR"].any():
-            # Buscamos cuál fila se marcó como True
-            fila_para_eliminar = df_editado[df_editado["BORRAR"] == True]
-            
-            if not fila_para_eliminar.empty:
-                id_borrar = fila_para_eliminar.iloc[0]["id"]
-                nombre_cl = fila_para_eliminar.iloc[0]["cliente"]
-                
-                # Borrar de la base de datos real
+        # Botón de borrado simple
+        selec = df_ed[df_ed["X"] == True]
+        if not selec.empty:
+            if st.button(f"BORRAR ({len(selec)})"):
+                ids = selec["id"].tolist()
                 conn = sqlite3.connect('warrior_pro.db')
                 c = conn.cursor()
-                c.execute("DELETE FROM recibos WHERE id=?", (id_borrar,))
+                for i in ids:
+                    c.execute("DELETE FROM recibos WHERE id=?", (i,))
                 conn.commit()
                 conn.close()
-                
-                st.toast(f"Fila de {nombre_cl} eliminada", icon="🗑️")
                 st.rerun()
     else:
-        st.info("No hay registros todavía.")
+        st.info("Sin registros.")

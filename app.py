@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 import urllib.parse
 import pytz
-from streamlit_gsheets import GSheetsConnection  # <--- NUEVO: Conexión
+from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURACIÓN ---
 st.set_page_config(
@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # Conexión con Google Sheets (Lee el link desde Secrets)
-conn = st.connection("gsheets", type=GSheetsConnection) # <--- NUEVO
+conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Configuración de zona horaria para Ecuador
 zona_ec = pytz.timezone('America/Guayaquil')
@@ -70,9 +70,12 @@ if submit:
         f_h = ahora.strftime("%d/%m/%Y %H:%M")
         f_e = fecha_entrega.strftime("%d/%m/%Y")
 
-        # --- GUARDAR EN GOOGLE SHEETS --- (NUEVO BLOQUE)
+        # --- GUARDAR EN GOOGLE SHEETS ---
         try:
+            # Lee la base de datos actual (usa el URL de los Secrets)
             df_actual = conn.read()
+            
+            # Crea la nueva fila con los nombres exactos de tus columnas
             nueva_fila = pd.DataFrame([{
                 "Fecha": f_h,
                 "Cliente": nombre.upper(),
@@ -83,13 +86,16 @@ if submit:
                 "Abono": abono,
                 "Saldo entrega": saldo
             }])
+            
+            # Une los datos y actualiza la nube
             df_final = pd.concat([df_actual, nueva_fila], ignore_index=True)
             conn.update(data=df_final)
-            st.success(f"✅ ¡Datos guardados en Google Sheets!")
+            st.success(f"✅ ¡Datos guardados en Google Sheets para {nombre.upper()}!")
+            
         except Exception as e:
-            st.error(f"⚠️ Los datos se procesaron pero no se guardaron en la nube: {e}")
+            st.error(f"⚠️ Error al conectar con Google Sheets: {e}")
 
-        # --- GENERADOR DE WHATSAPP --- (IGUAL QUE ANTES)
+        # --- GENERADOR DE WHATSAPP ---
         e_zapato, e_martillo = "👞", "🔨"
         e_check = "✅"
         e_llave, e_bolsa, e_billete = "🛠️", "💰", "💵"

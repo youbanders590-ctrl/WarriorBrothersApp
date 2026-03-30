@@ -98,8 +98,8 @@ with col_info:
     st.markdown("""
         <div class="info-box">
             <h3>📱 Síguenos en Redes</h3>
-            <a href="https://www.tiktok.com/" class="social-btn tiktok">🎵 TikTok</a>
-            <a href="https://www.facebook.com/" class="social-btn facebook">👤 Facebook</a>
+            <a href="https://www.tiktok.com/@thewarriorbrother" class="social-btn tiktok" target="_blank">🎵 TikTok</a>
+            <a href="https://www.facebook.com/WarriorBrothersLoja" class="social-btn facebook" target="_blank">👤 Facebook</a>
         </div>
         <div class="info-box" style="border-left-color: #FFD700;">
             <h3>📍 Ubicación y Horarios</h3>
@@ -116,8 +116,7 @@ with col_info:
 with col_mapa:
     st.markdown("<h3 style='color: #1a1a1a; font-family: Montserrat; margin-left: 5px;'>Visítanos en nuestro Taller</h3>", unsafe_allow_html=True)
     
-    # Hemos configurado el mapa para que busque exactamente "The Warrior Brothers Loja"
-    # Esto fuerza a Google a poner el marcador (globo rojo) sobre tu negocio.
+    # Mapa configurado para Loja
     mapa_html = """
     <iframe 
         width="100%" 
@@ -125,7 +124,7 @@ with col_mapa:
         style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
         loading="lazy" 
         allowfullscreen 
-        src="https://maps.google.com/maps?q=The%20Warrior%20Brothers%20Loja%20Lauro%20Guerrero&t=&z=17&ie=UTF8&iwloc=&output=embed">
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3980.123456789!2d-79.2045!3d-3.9985!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM8KwNTknNTQuNiJTIDc5wrAxMicyNy4wIlc!5e0!3m2!1ses!2sec!4v1620000000000">
     </iframe>
     """
     components.html(mapa_html, height=450)

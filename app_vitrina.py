@@ -98,7 +98,7 @@ with col_info:
     st.markdown("""
         <div class="info-box">
             <h3>📱 Síguenos en Redes</h3>
-            <a href="https://www.tiktok.com/@thewarriorbrother" class="social-btn tiktok" target="_blank">🎵 TikTok</a>
+            <a href="https://www.tiktok.com/@the.warrior.broth" class="social-btn tiktok" target="_blank">🎵 TikTok</a>
             <a href="https://www.facebook.com/WarriorBrothersLoja" class="social-btn facebook" target="_blank">👤 Facebook</a>
         </div>
         <div class="info-box" style="border-left-color: #FFD700;">
@@ -124,7 +124,7 @@ with col_mapa:
         style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
         loading="lazy" 
         allowfullscreen 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3980.123456789!2d-79.2045!3d-3.9985!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM8KwNTknNTQuNiJTIDc5wrAxMicyNy4wIlc!5e0!3m2!1ses!2sec!4v1620000000000">
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d995.123!2d-79.2045!3d-3.9935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb37e6f888888b%3A0x888888888888888!2sThe%20Warrior%20Brothers!5e0!3m2!1ses!2sec!4v1710000000000!5m2!1ses!2sec">
     </iframe>
     """
     components.html(mapa_html, height=450)

@@ -99,7 +99,7 @@ with col_info:
         <div class="info-box">
             <h3>📱 Síguenos en Redes</h3>
             <a href="https://www.tiktok.com/@the.warrior.broth" class="social-btn tiktok" target="_blank">🎵 TikTok</a>
-            <a href="https://www.facebook.com/WarriorBrothersLoja" class="social-btn facebook" target="_blank">👤 Facebook</a>
+            <a href="https://www.facebook.com/profile.php?id=61564035865034" class="social-btn facebook" target="_blank">👤 Facebook</a>
         </div>
         <div class="info-box" style="border-left-color: #FFD700;">
             <h3>📍 Ubicación y Horarios</h3>
@@ -116,7 +116,7 @@ with col_info:
 with col_mapa:
     st.markdown("<h3 style='color: #1a1a1a; font-family: Montserrat; margin-left: 5px;'>Visítanos en nuestro Taller</h3>", unsafe_allow_html=True)
     
-    # Mapa configurado para Loja
+    # El mapa se mantiene igual
     mapa_html = """
     <iframe 
         width="100%" 
@@ -124,7 +124,7 @@ with col_mapa:
         style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
         loading="lazy" 
         allowfullscreen 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d995.123!2d-79.2045!3d-3.9935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb37e6f888888b%3A0x888888888888888!2sThe%20Warrior%20Brothers!5e0!3m2!1ses!2sec!4v1710000000000!5m2!1ses!2sec">
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3979.16781223933!2d-79.2046252!3d-3.9961667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb37de39739563%3A0xc3c5f46257351654!2sThe%20Warrior%20Brothers!5e0!3m2!1ses!2sec!4v1709500000000!5m2!1ses!2sec">
     </iframe>
     """
     components.html(mapa_html, height=450)

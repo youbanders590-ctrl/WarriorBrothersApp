@@ -22,7 +22,6 @@ st.markdown("""
     
     .stApp { background-color: #f8f9fa; }
     
-    /* Hero Section */
     .hero-container {
         background: #121212; padding: 60px 20px; border-radius: 30px;
         text-align: center; color: white; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
@@ -44,36 +43,29 @@ st.markdown("""
         font-family: 'Montserrat', sans-serif; font-weight: 700; display: inline-block;
         margin-top: 25px; transition: 0.3s;
     }
-    .whatsapp-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
 
-    /* Cards de Servicios */
     .service-card {
         background: white; border-radius: 20px; padding: 25px; text-align: center;
         border: 2px solid #e0e0e0; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         height: 100%; transition: 0.3s; margin-bottom: 20px;
     }
-    .service-card h3 { color: #1a1a1a !important; font-family: 'Montserrat', sans-serif; }
     
-    /* Info Boxes */
     .info-box {
         background: #ffffff; padding: 25px; border-radius: 20px;
         border-left: 8px solid #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         color: #1a1a1a !important; margin-bottom: 20px;
     }
     
-    /* Botones Sociales */
     .social-btn {
         display: inline-flex; align-items: center; gap: 8px;
         padding: 10px 20px; border-radius: 10px; text-decoration: none;
         color: white !important; font-weight: bold; margin: 5px; transition: 0.3s;
     }
-    .social-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
     .tiktok { background: #000000; border: 1px solid #fe2c55; }
     .facebook { background: #1877F2; }
     .instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
     
     .schedule-list { list-style: none; padding: 0; margin-top: 10px; }
-    .schedule-list li { margin-bottom: 5px; font-family: 'Roboto', sans-serif; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -132,15 +124,16 @@ with col_info:
 with col_mapa:
     st.markdown("<h3 style='color: #1a1a1a; font-family: Montserrat; margin-left: 5px;'>Visítanos en nuestro Taller</h3>", unsafe_allow_html=True)
     
-    # Mapa actualizado con la ubicación exacta de THE WARRIOR BROTHERS
-    mapa_html = """
+    # MAPA ACTUALIZADO CON TU IFRAME EXACTO
+    mapa_html = f"""
     <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2319.6535553983294!2d-79.20821527422483!3d-3.9967444553015996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb491f5912b73b%3A0xa1e733db367e07a6!2sThe%20Warrior%20Brothers!5e1!3m2!1ses!2sec!4v1776383384965!5m2!1ses!2sec" 
         width="100%" 
         height="400" 
         style="border:0; border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" 
+        allowfullscreen="" 
         loading="lazy" 
-        allowfullscreen 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3980.0543632363166!2d-79.2064567!3d-3.9986386!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91cb491f5912b73b%3A0xa1e733b7367e07a6!2sTHE%20WARRIOR%20BROTHERS!5e0!3m2!1ses-419!2sec!4v1710000000000!5m2!1ses-419!2sec">
+        referrerpolicy="no-referrer-when-downgrade">
     </iframe>
     """
     components.html(mapa_html, height=450)

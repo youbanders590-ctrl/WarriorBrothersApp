@@ -54,10 +54,12 @@ st.markdown("""
     .social-btn {
         display: inline-flex; align-items: center; gap: 8px;
         padding: 10px 20px; border-radius: 10px; text-decoration: none;
-        color: white !important; font-weight: bold; margin: 5px;
+        color: white !important; font-weight: bold; margin: 5px; transition: 0.3s;
     }
+    .social-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
     .tiktok { background: #000000; border: 1px solid #fe2c55; }
     .facebook { background: #1877F2; }
+    .instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
     
     .schedule-list { list-style: none; padding: 0; margin-top: 10px; }
     .schedule-list li { margin-bottom: 5px; font-family: 'Roboto', sans-serif; }
@@ -98,8 +100,11 @@ with col_info:
     st.markdown("""
         <div class="info-box">
             <h3>📱 Síguenos en Redes</h3>
-            <a href="https://www.tiktok.com/@the.warrior.broth" class="social-btn tiktok" target="_blank">🎵 TikTok</a>
-            <a href="https://www.facebook.com/profile.php?id=61564035865034" class="social-btn facebook" target="_blank">👤 Facebook</a>
+            <div style="display: flex; flex-wrap: wrap;">
+                <a href="https://www.tiktok.com/@the.warrior.broth" class="social-btn tiktok" target="_blank">🎵 TikTok</a>
+                <a href="https://www.facebook.com/TheWarriorBrothersLoja" class="social-btn facebook" target="_blank">👤 Facebook</a>
+                <a href="https://www.instagram.com/thewarriorbrothers2023" class="social-btn instagram" target="_blank">📸 Instagram</a>
+            </div>
         </div>
         <div class="info-box" style="border-left-color: #FFD700;">
             <h3>📍 Ubicación y Horarios</h3>
@@ -116,7 +121,6 @@ with col_info:
 with col_mapa:
     st.markdown("<h3 style='color: #1a1a1a; font-family: Montserrat; margin-left: 5px;'>Visítanos en nuestro Taller</h3>", unsafe_allow_html=True)
     
-    # El mapa se mantiene igual
     mapa_html = """
     <iframe 
         width="100%" 

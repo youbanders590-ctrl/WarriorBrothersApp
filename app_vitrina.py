@@ -11,137 +11,135 @@ def get_base64_image(image_path):
             return base64.b64encode(img_file.read()).decode()
     except: return None
 
-# Carga del logo (asegúrate de que el archivo se llame logo.png)
+# Carga del logo
 logo_base_64 = get_base64_image("logo.png")
-logo_html = f'<img src="data:image/png;base64,{logo_base_64}" style="width:120px; vertical-align: middle; margin-right: 20px; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5));">' if logo_base_64 else ""
+logo_html = f'<img src="data:image/png;base64,{logo_base_64}" style="width:200px; margin-bottom: 20px; filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.6));">' if logo_base_64 else ""
 
-# --- 2. DISEÑO CSS PERSONALIZADO ---
+# --- 2. DISEÑO CSS PARA LETRAS GRANDES Y CENTRADO ---
 st.markdown(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Open+Sans:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Open+Sans:wght@600;800&display=swap');
     
     .stApp {{ background-color: #ffffff; }}
 
-    /* PORTADA PRINCIPAL CENTRADA */
+    /* CONTENEDOR HERO GIGANTE */
     .hero-container {{
-        background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), 
-                    url('https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=2000&auto=format&fit=crop');
+        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                    url('https://images.unsplash.com/photo-1590739225287-bd265003ad3c?q=80&w=2000&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
-        padding: 100px 40px;
-        text-align: center; /* TODO CENTRADO */
+        padding: 120px 40px;
+        text-align: center;
         color: white;
-        border-radius: 0 0 50px 50px;
-        margin-top: -60px;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        border-radius: 0 0 60px 60px;
+        margin-top: -80px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }}
 
-    .header-block {{
-        display: flex;
-        align-items: center;
-        justify-content: center; /* CENTRA EL LOGO Y TÍTULO */
-        flex-wrap: wrap;
-        margin-bottom: 30px;
-    }}
-
+    /* TÍTULO GIGANTE */
     .main-title {{
         font-family: 'Montserrat', sans-serif;
-        font-size: clamp(2.5rem, 8vw, 5.5rem);
+        font-size: clamp(3.5rem, 12vw, 7rem); /* LETRAS MUY GRANDES */
         font-weight: 900;
-        margin: 0;
+        margin: 10px 0;
         text-transform: uppercase;
-        background: linear-gradient(to bottom, #FFFFFF 50%, #FFD700 100%);
+        line-height: 0.9;
+        background: linear-gradient(to bottom, #FFFFFF 40%, #FFD700 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5));
+        filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.8));
     }}
 
+    /* SUBTÍTULOS RESALTADOS */
     .section-headline {{
         font-family: 'Montserrat', sans-serif;
-        font-size: 2.5rem;
-        font-weight: 700;
+        font-size: clamp(1.8rem, 5vw, 3.5rem);
+        font-weight: 800;
         color: #FFD700;
-        margin-top: 40px;
-        margin-bottom: 20px;
+        margin-top: 50px;
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
     }}
 
+    /* TEXTO DE CONTENIDO GRANDE */
     .content-text {{
         font-family: 'Open Sans', sans-serif;
-        font-size: 1.25rem;
-        max-width: 1000px;
-        margin: 0 auto 25px auto;
-        line-height: 1.8;
-        color: #f5f5f5;
-        text-align: center;
+        font-size: clamp(1.2rem, 3vw, 1.6rem); /* AUMENTO DE TAMAÑO */
+        font-weight: 600;
+        max-width: 1100px;
+        margin: 30px auto;
+        line-height: 1.6;
+        color: #ffffff;
     }}
 
     .price-notice {{
-        font-style: italic;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
         color: #FFD700;
-        font-size: 1.1rem;
-        margin-bottom: 30px;
+        font-size: 1.4rem;
+        text-transform: uppercase;
+        margin-top: 40px;
     }}
 
-    /* Sidebar */
-    [data-testid="stSidebar"] {{ background-color: #111111; border-right: 3px solid #FFD700; }}
+    .disclaimer-text {{
+        font-size: 1.1rem;
+        color: #cccccc;
+        max-width: 900px;
+        margin: 20px auto;
+        font-style: italic;
+    }}
 
-    /* Botón WhatsApp */
+    /* BOTÓN WHATSAPP GRANDE */
     .wa-button {{
         background-color: #25D366;
         color: white !important;
-        padding: 20px 45px;
-        border-radius: 50px;
+        padding: 25px 60px;
+        border-radius: 60px;
         text-decoration: none;
-        font-weight: bold;
-        font-size: 1.2rem;
+        font-weight: 900;
+        font-size: 1.5rem;
         display: inline-block;
+        margin-top: 40px;
+        box-shadow: 0 15px 30px rgba(37,211,102,0.4);
         transition: 0.3s;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        margin-top: 20px;
     }}
-    .wa-button:hover {{ transform: scale(1.05); background-color: #128C7E; }}
+    .wa-button:hover {{ transform: scale(1.1); }}
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {{ background-color: #000000; border-right: 4px solid #FFD700; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. MENÚ LATERAL ---
+# --- 3. BARRA LATERAL ---
 with st.sidebar:
-    st.markdown("<h2 style='color:white; text-align:center;'>MENÚ</h2>", unsafe_allow_html=True)
-    opcion = st.radio("", ["🏠 Inicio", "🛠️ Otros Servicios", "🛍️ Tienda", "📍 Contacto"])
+    st.markdown("<h2 style='color:white; text-align:center; font-family:Montserrat;'>MENÚ</h2>", unsafe_allow_html=True)
+    st.radio("", ["🏠 Inicio", "📍 Ubicación", "📱 Redes Sociales"])
 
-# --- 4. CONTENIDO ---
+# --- 4. CUERPO DE LA PÁGINA ---
+st.markdown(f"""
+    <div class="hero-container">
+        {logo_html}
+        <h1 class="main-title">THE WARRIOR BROTHERS</h1>
+        
+        <h2 class="section-headline">Reparación Profesional de Calzado</h2>
+        
+        <p class="content-text">
+            Como nuestro servicio estrella, somos expertos en reparación de calzado. 
+            Con <b>40 años de experiencia combinada</b> de nuestros dos zapateros, ¡nos encargamos de todo! 
+            Desde restauraciones completas de calzado de alta gama hasta el cambio de tacones de uso diario. 
+            También ofrecemos <b>servicio de envío a domicilio</b>.
+        </p>
+        
+        <p class="price-notice">
+            EL PRECIO SE DETERMINA TRAS LA INSPECCIÓN DEL CALZADO
+        </p>
+        
+        <p class="disclaimer-text">
+            Tenga en cuenta que la reparación de calzado es un servicio personalizado. Nos esforzamos al máximo para reparar sus zapatos con la mayor calidad posible, considerando su estado actual y los métodos disponibles en la industria.
+        </p>
+        
+        <a href="https://wa.me/593994718745" class="wa-button">WHATSAPP: 099 471 8745</a>
+    </div>
+""", unsafe_allow_html=True)
 
-if opcion == "🏠 Inicio":
-    # PORTADA CENTRADA SIN TEXTO A LA DERECHA
-    st.markdown(f"""
-        <div class="hero-container">
-            <div class="header-block">
-                {logo_html}
-                <h1 class="main-title">THE WARRIOR BROTHERS</h1>
-            </div>
-            
-            <h2 class="section-headline">Reparación Profesional de Calzado</h2>
-            
-            <p class="content-text">
-                Como nuestro servicio estrella, somos expertos en reparación de calzado. 
-                Con <b>40 años de experiencia combinada</b> de nuestros dos zapateros, ¡nos encargamos de todo! 
-                Desde restauraciones completas de calzado de alta gama hasta el cambio de tacones de zapatos de uso diario. 
-                También ofrecemos <b>servicio de envío a domicilio</b>. Contáctenos para solicitar un presupuesto.
-            </p>
-            
-            <p class="price-notice">
-                Lista de precios estimados: el precio de cada reparación se determina tras la inspección del calzado.
-            </p>
-            
-            <p class="content-text" style="font-size: 1rem; opacity: 0.9;">
-                Tenga en cuenta que la reparación de calzado es un servicio personalizado. Dado que cada zapato usado tiene diferentes formas, tamaños y condiciones, nos esforzamos al máximo para reparar sus zapatos con la mayor calidad posible, considerando su estado actual y los métodos disponibles en la industria.
-            </p>
-            
-            <a href="https://wa.me/593994718745" class="wa-button">WHATSAPP: 099 471 8745</a>
-        </div>
-    """, unsafe_allow_html=True)
-
-else:
-    st.info("Sección en mantenimiento. Por favor, regrese a la página de Inicio.")
-
-# --- 5. FOOTER ---
-st.markdown("<br><hr><center>© 2026 The Warrior Brothers | Loja, Ecuador 🛡️⚒️</center>", unsafe_allow_html=True)
+# Footer
+st.markdown("<br><center style='color:#888; font-weight:bold;'>© 2026 THE WARRIOR BROTHERS | LOJA, ECUADOR 🛡️⚒️</center><br>", unsafe_allow_html=True)
